@@ -1,0 +1,306 @@
+<div class="min-h-screen bg-[#F5F6F8] flex justify-center">
+  <div class="w-full max-w-209 flex flex-col md:flex-row md:gap-6">
+    <!-- Main Content Area (Left column on desktop LTR) -->
+    <main dir="rtl" class="flex-1 flex flex-col bg-[#F5F6F8] min-h-screen relative overflow-y-auto">
+      <!-- Workspace Header (Full width of left column) -->
+      <header
+        class="w-full bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between sticky top-0 z-20 shadow-[0_2px_8px_rgba(0,0,0,0.01)]">
+        <!-- Right: Dynamic Title based on active page -->
+        <h1 class="text-lg font-black text-gray-900">
+          @if (activeTab() === 'pay') { دفع }
+          @else if (activeTab() === 'home') { الرئيسية }
+          @else if (activeTab() === 'manage') { إدارة }
+          @else if (activeTab() === 'shop') { المتجر }
+          @else { المزيد }
+        </h1>
+
+        <!-- Left: Support Icon -->
+        <button type="button" aria-label="الدعم الفني"
+          class="text-gray-700 hover:text-[#ED1C24] hover:bg-gray-50 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200">
+          <div class="w-6 h-6 bg-current transition-colors duration-200"
+            style="mask: url('/imgs/ic-support.svg') no-repeat center / contain; -webkit-mask: url('/imgs/ic-support.svg') no-repeat center / contain;">
+          </div>
+        </button>
+      </header>
+
+      <!-- Workspace Content (Gray background, centered card) -->
+      <div
+        class="grow flex flex-col items-center justify-start pt-4 pb-40 md:py-10 md:justify-center px-4 sm:px-6 lg:px-8 md:px-0">
+
+        <!-- If active tab is 'pay' (matches image) -->
+        @if (activeTab() === 'pay') {
+        <div
+          class="w-full max-w-lg bg-white rounded-3xl border border-gray-100 shadow-xl shadow-gray-100/40 p-6 flex flex-col gap-6 transition-all duration-300">
+
+          <!-- Bulk Checkbox & Add Row Control -->
+          <div class="flex items-center justify-between py-1 px-1">
+            <!-- All Numbers Checkbox (Right side in RTL) -->
+            <app-checkbox [checked]="allSelected()" [label]="'جميع الأرقام'"
+              (checkedChange)="toggleSelectAll($event)"></app-checkbox>
+
+            <!-- Add Number Button (Left side in RTL) -->
+            <button (click)="addNumber()" type="button"
+              class="px-4 py-1.5 text-xs font-bold text-gray-800 bg-white border border-gray-200 rounded-full hover:bg-gray-50 active:scale-95 transition-all duration-200 shadow-sm">
+              إضافة رقم
+            </button>
+          </div>
+
+          <!-- Divider line to separate bulk control and rows list -->
+          <div class="border-t border-gray-100 my-1"></div>
+
+          <!-- Phone Number and Amount List -->
+          <div class="flex flex-col gap-4">
+            @for (row of paymentRows(); track row.id) {
+            <div [class.opacity-60]="!row.selected"
+              class="relative py-4 border-b border-gray-100 last:border-0 flex flex-col gap-3 transition-all duration-300">
+
+              <!-- Inputs Horizontal Row -->
+              <div class="flex items-start gap-4 w-full">
+                <!-- Phone Input Column with Checkbox beside it (Right Side - 65% width) -->
+                <div class="grow flex items-end gap-2 text-right">
+                  <!-- Checkbox (Rightmost) -->
+                  <app-checkbox [checked]="row.selected" (checkedChange)="onRowSelectChange(row.id, $event)"
+                    class="mb-2.5"></app-checkbox>
+
+                  <!-- Input box with label (Left of Checkbox) -->
+                  <div class="grow">
+                    <app-input [label]="'رقم الهاتف'" [placeholder]="'رقم الهاتف'" [value]="row.phone" [required]="true"
+                      [onlyNumbers]="true" [disabled]="!row.selected"
+                      (valueChange)="onPhoneChange(row.id, $event)"></app-input>
+                  </div>
+                </div>
+
+                <!-- Amount Input Column (Left Side - 35% width) -->
+                <div class="w-[35%]">
+                  <app-input [label]="'المبلغ'" [placeholder]="'0.000'" [value]="row.amount" [required]="true"
+                    [suffix]="'د.ك'" [textAlign]="'left'" [disabled]="!row.selected" [onlyDecimals]="true"
+                    (valueChange)="onAmountChange(row.id, $event)"></app-input>
+                </div>
+
+                <!-- Delete Option (Far Left in RTL) -->
+                @if (paymentRows().length > 1) {
+                <button (click)="removeNumber(row.id)" type="button"
+                  class="text-gray-400 hover:text-red-500 p-1.5 rounded-lg hover:bg-red-50 transition-colors self-end mb-2"
+                  title="حذف الرقم">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
+                } @else {
+                <div class="w-2 self-end"></div>
+                }
+              </div>
+
+              <!-- Error Warning Container (Appears if selected and fields are empty) -->
+              @if (row.selected && (!row.phone || !row.amount)) {
+              <div
+                class="flex items-center justify-between bg-red-50 border border-red-100 text-[#ED1C24] px-4 py-2.5 rounded-[14px] text-xs font-semibold w-full">
+                <div class="flex items-center gap-2">
+                  <!-- Red Cross Icon -->
+                  <svg class="w-4 h-4 text-red-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  <span>رقم الهاتف المحمول والمبلغ مطلوبان</span>
+                </div>
+                <button type="button" class="text-red-400 hover:text-red-600 transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              }
+
+            </div>
+            }
+          </div>
+
+          <!-- Payment Options Section -->
+          <div class="mt-2 flex flex-col gap-4">
+            <div class="text-right">
+              <h2 class="text-base font-black text-gray-900">خيارات الدفع</h2>
+              <p class="text-xs font-semibold text-gray-500 mt-1">
+                استمتع بمزايا التطبيق مع المزيد من خيارات الدفع
+              </p>
+            </div>
+
+            <!-- Accordion 1: Civil ID Payment -->
+            <app-accordion [title]="'الدفع عن طريق البطاقة المدنية'" [iconType]="'civil-id'">
+              <div class="flex flex-col gap-3">
+                <p class="text-xs text-gray-600 font-semibold leading-relaxed">
+                  الرجاء إدخال الرقم المدني المكون من 12 رقماً بشكل صحيح لإتمام عملية الدفع.
+                </p>
+                <app-input [label]="'الرقم المدني'" [placeholder]="'رقم البطاقة المدنية'" [value]="civilId()"
+                  [required]="true" [onlyNumbers]="true" (valueChange)="civilId.set($event)"></app-input>
+              </div>
+            </app-accordion>
+
+            <!-- Accordion 2: Voucher Payment -->
+            <app-accordion [title]="'الدفع من خلال القسيمة'" [iconType]="'voucher'">
+              <div class="flex flex-col gap-3">
+                <p class="text-xs text-gray-600 font-semibold leading-relaxed">
+                  إذا كان لديك قسيمة دفع Ooredoo، يرجى إدخال الرمز الخاص بها أدناه.
+                </p>
+                <div class="flex gap-2 items-end">
+                  <div class="grow">
+                    <app-input [label]="'رمز القسيمة'" [placeholder]="'رمز القسيمة'" [value]="voucherCode()"
+                      [required]="true" (valueChange)="voucherCode.set($event)"></app-input>
+                  </div>
+                  <app-button [variant]="'secondary'" [disabled]="!voucherCode()" class="h-11.5">
+                    تطبيق
+                  </app-button>
+                </div>
+              </div>
+            </app-accordion>
+          </div>
+
+          <!-- Payment Button Footer -->
+          <div
+            class="fixed bottom-16 left-0 right-0 z-20 bg-white rounded-t-3xl border-t border-gray-100 p-4 shadow-[0_-8px_20px_rgba(0,0,0,0.03)] md:relative md:bottom-0 md:bg-transparent md:border-t-0 md:p-0 md:shadow-none md:rounded-t-none mt-4">
+            @if (totalSum() > 0) {
+            <app-button (click)="onPay()" [variant]="'primary'" [fullWidth]="true" [size]="'lg'" [loading]="isLoading()"
+              class="relative overflow-hidden group py-4 shadow-lg active:scale-98">
+              <span class="relative z-10 font-black tracking-wide">
+                دفع (د.ك {{ formattedTotal() }})
+              </span>
+              <!-- Hover effect background overlay -->
+              <div
+                class="absolute inset-0 w-full h-full bg-white/10 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left">
+              </div>
+            </app-button>
+            } @else {
+            <!-- Inactive/Disabled button matches mockup -->
+            <app-button [variant]="'payment-inactive'" [disabled]="true" [size]="'lg'" class="py-4">
+              دفع (د.ك 0.000)
+            </app-button>
+            }
+          </div>
+
+        </div>
+        } @else {
+        <!-- Placeholder views for other navigation tabs -->
+        <div
+          class="w-full max-w-lg bg-white rounded-3xl border border-gray-100 shadow-xl p-8 text-center transition-all duration-300">
+          <div class="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            @if (activeTab() === 'home') {
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            } @else if (activeTab() === 'manage') {
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+            </svg>
+            } @else if (activeTab() === 'shop') {
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            } @else {
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+            }
+          </div>
+          <h2 class="text-xl font-black text-gray-900 mb-2">
+            @if (activeTab() === 'home') { صفحة الرئيسية }
+            @else if (activeTab() === 'manage') { صفحة إدارة الحساب }
+            @else if (activeTab() === 'shop') { صفحة المتجر الإلكتروني }
+            @else { صفحة المزيد }
+          </h2>
+          <p class="text-sm text-gray-500">
+            هذه الصفحة قيد التطوير حالياً، يرجى التوجه لصفحة "دفع" لتجربة واجهة الدفع التفاعلية.
+          </p>
+        </div>
+        }
+
+      </div>
+    </main>
+
+    <!-- Sidebar Menu (Visible on desktop only, Right column on desktop LTR) -->
+    <aside dir="rtl" class="hidden md:block w-75 bg-white border-l border-gray-100 h-screen sticky top-0 shrink-0">
+      <app-sidebar [activeItem]="activeTab()" (navigate)="onNavigate($event)"></app-sidebar>
+    </aside>
+
+    <!-- Mobile Bottom Navigation Bar (RTL aligned, matches screenshot) -->
+    <nav
+      class="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 shadow-[0_-4px_12px_rgba(0,0,0,0.03)] z-30 h-16 px-4 pb-safe flex justify-around items-center"
+      dir="rtl">
+      <!-- الرئيسية -->
+      <button (click)="onNavigate('home')" type="button" [class.text-[#ED1C24]]="activeTab() === 'home'"
+        [class.text-gray-400]="activeTab() !== 'home'"
+        class="flex flex-col items-center justify-center gap-1 transition-all duration-200 flex-1">
+        <div [class.bg-[#FFF0F0]]="activeTab() === 'home'"
+          class="w-14 h-8 flex items-center justify-center rounded-full transition-all duration-200">
+          <div class="w-5 h-5 bg-current"
+            style="mask: url('/imgs/home-icon.svg') no-repeat center / contain; -webkit-mask: url('/imgs/home-icon.svg') no-repeat center / contain;">
+          </div>
+        </div>
+        <span class="text-[11px] leading-none" [class.font-bold]="activeTab() === 'home'">الرئيسية</span>
+      </button>
+
+      <!-- إدارة -->
+      <button (click)="onNavigate('manage')" type="button" [class.text-[#ED1C24]]="activeTab() === 'manage'"
+        [class.text-gray-400]="activeTab() !== 'manage'"
+        class="flex flex-col items-center justify-center gap-1 transition-all duration-200 flex-1">
+        <div [class.bg-[#FFF0F0]]="activeTab() === 'manage'"
+          class="w-14 h-8 flex items-center justify-center rounded-full transition-all duration-200">
+          <div class="w-5 h-5 bg-current"
+            style="mask: url('/imgs/Manage-icon.svg') no-repeat center / contain; -webkit-mask: url('/imgs/Manage-icon.svg') no-repeat center / contain;">
+          </div>
+        </div>
+        <span class="text-[11px] leading-none" [class.font-bold]="activeTab() === 'manage'">إدارة</span>
+      </button>
+
+      <!-- دفع -->
+      <button (click)="onNavigate('pay')" type="button" [class.text-[#ED1C24]]="activeTab() === 'pay'"
+        [class.text-gray-400]="activeTab() !== 'pay'"
+        class="flex flex-col items-center justify-center gap-1 transition-all duration-200 flex-1">
+        <div [class.bg-[#FFF0F0]]="activeTab() === 'pay'"
+          class="w-14 h-8 flex items-center justify-center rounded-full transition-all duration-200">
+          <!-- Filled Payment Wallet Icon matches screenshot -->
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path
+              d="M21 18c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V6c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v2h-9c-1.11 0-2 .9-2 2v4c0 1.1.89 2 2 2h9v2zm-9-8v4h8v-4h-8zm6 3c-.55 0-1-.45-1-1s.45-1 1-1 1 .45 1 1-.45 1-1 1z" />
+          </svg>
+        </div>
+        <span class="text-[11px] leading-none" [class.font-bold]="activeTab() === 'pay'">دفع</span>
+      </button>
+
+      <!-- المتجر -->
+      <button (click)="onNavigate('shop')" type="button" [class.text-[#ED1C24]]="activeTab() === 'shop'"
+        [class.text-gray-400]="activeTab() !== 'shop'"
+        class="flex flex-col items-center justify-center gap-1 transition-all duration-200 flex-1">
+        <div [class.bg-[#FFF0F0]]="activeTab() === 'shop'"
+          class="w-14 h-8 flex items-center justify-center rounded-full transition-all duration-200">
+          <div class="w-5 h-5 bg-current"
+            style="mask: url('/imgs/shop-icon.svg') no-repeat center / contain; -webkit-mask: url('/imgs/shop-icon.svg') no-repeat center / contain;">
+          </div>
+        </div>
+        <span class="text-[11px] leading-none" [class.font-bold]="activeTab() === 'shop'">المتجر</span>
+      </button>
+
+      <!-- المزيد -->
+      <button (click)="onNavigate('more')" type="button" [class.text-[#ED1C24]]="activeTab() === 'more'"
+        [class.text-gray-400]="activeTab() !== 'more'"
+        class="flex flex-col items-center justify-center gap-1 transition-all duration-200 flex-1">
+        <div [class.bg-[#FFF0F0]]="activeTab() === 'more'"
+          class="w-14 h-8 flex items-center justify-center rounded-full transition-all duration-200">
+          <div class="w-5 h-5 bg-current"
+            style="mask: url('/imgs/more-icon.svg') no-repeat center / contain; -webkit-mask: url('/imgs/more-icon.svg') no-repeat center / contain;">
+          </div>
+        </div>
+        <span class="text-[11px] leading-none" [class.font-bold]="activeTab() === 'more'">المزيد</span>
+      </button>
+    </nav>
+  </div>
+</div>

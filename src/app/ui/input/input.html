@@ -1,0 +1,26 @@
+<div class="flex flex-col gap-1.5 w-full text-right" dir="rtl">
+  @if (label) {
+  <label [for]="id" class="text-sm font-semibold text-gray-800 flex items-center gap-0.5 justify-start">
+    <span>{{ label }}</span>
+    @if (required) {
+    <span class="text-red-500 font-bold">*</span>
+    }
+  </label>
+  }
+
+  <div [class.bg-gray-50]="disabled" [class.border-gray-200]="!disabled"
+    class="relative flex items-center w-full bg-white border rounded-[14px] px-3.5 py-2.5 shadow-sm hover:border-gray-300 transition-all duration-200 focus-within:border-red-500 focus-within:ring-2 focus-within:ring-red-100">
+    @if (suffix) {
+    <span class="text-sm font-semibold text-gray-500 select-none ml-2">
+      {{ suffix }}
+    </span>
+    }
+
+    <input [id]="id" [type]="type" [placeholder]="placeholder" [value]="value" [disabled]="disabled"
+      (input)="onInput($event)" [attr.inputmode]="onlyDecimals ? 'decimal' : (onlyNumbers ? 'numeric' : null)"
+      [attr.pattern]="onlyDecimals ? '[0-9.]*' : (onlyNumbers ? '[0-9]*' : null)"
+      [class.text-left]="textAlign === 'left'" [class.text-right]="textAlign === 'right'"
+      [class.text-center]="textAlign === 'center'"
+      class="w-full bg-transparent border-0 outline-none text-gray-900 placeholder-gray-400 text-base md:text-sm font-medium" />
+  </div>
+</div>

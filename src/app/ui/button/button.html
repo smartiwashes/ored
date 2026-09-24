@@ -1,0 +1,28 @@
+<button [disabled]="disabled || loading" (click)="onClick($event)" [ngClass]="[
+    'inline-flex items-center justify-center font-bold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 relative',
+    size === 'sm' ? 'px-3 py-1.5 text-xs rounded-lg' : '',
+    size === 'md' ? 'px-6 py-3 text-sm rounded-[14px]' : '',
+    size === 'lg' ? 'px-8 py-4 text-base rounded-[18px]' : '',
+    variant === 'primary' ? 'bg-[#ED1C24] text-white hover:bg-[#c9121a] focus:ring-red-500 shadow-md shadow-red-100' : '',
+    variant === 'secondary' ? 'bg-white text-gray-900 border border-gray-200 hover:bg-gray-50 focus:ring-gray-300 shadow-sm' : '',
+    variant === 'outline' ? 'bg-transparent text-[#ED1C24] border border-[#ED1C24] hover:bg-red-50 focus:ring-red-500' : '',
+    variant === 'ghost' ? 'bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-300' : '',
+    variant === 'danger' ? 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500' : '',
+    variant === 'payment-inactive' ? 'bg-gray-300 text-white cursor-not-allowed font-bold rounded-full w-full shadow-sm' : '',
+    fullWidth ? 'w-full' : '',
+    (disabled || loading) ? 'opacity-60 cursor-not-allowed' : 'active:scale-98'
+  ]">
+  @if (loading) {
+  <!-- Center 4-Dot Bounce Loader (One by one, slower) -->
+  <div class="absolute inset-0 flex items-center justify-center gap-1.5">
+    <div class="w-2 h-2 rounded-full bg-current animate-dot-bounce"></div>
+    <div class="w-2 h-2 rounded-full bg-current animate-dot-bounce delay-400"></div>
+    <div class="w-2 h-2 rounded-full bg-current animate-dot-bounce delay-800"></div>
+    <div class="w-2 h-2 rounded-full bg-current animate-dot-bounce delay-1200"></div>
+  </div>
+  }
+
+  <span [class.invisible]="loading" class="flex items-center justify-center gap-2">
+    <ng-content></ng-content>
+  </span>
+</button>

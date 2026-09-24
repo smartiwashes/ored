@@ -1,0 +1,117 @@
+<div class="min-h-screen bg-[#F5F6F8] flex justify-center">
+  <div class="w-full max-w-209 flex flex-col md:flex-row md:gap-6">
+    <!-- Main Content Area (Left column on desktop LTR) -->
+    <main dir="rtl" class="flex-1 flex flex-col bg-white md:bg-[#F5F6F8] min-h-screen relative overflow-y-auto">
+
+      <!-- Workspace Header -->
+      <header
+        class="w-full bg-white border-b border-gray-100 px-6 py-4 flex items-center justify-between sticky top-0 z-20 shadow-[0_2px_8px_rgba(0,0,0,0.01)]">
+        <!-- Right: Back button (Arrow pointing right in RTL) -->
+        <button (click)="onBack()" type="button" aria-label="رجوع"
+          class="text-gray-800 hover:text-[#ED1C24] w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 hover:bg-gray-50 active:scale-95">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+          </svg>
+        </button>
+
+        <!-- Center: Title -->
+        <h1 class="text-lg font-black text-gray-900">ملخص</h1>
+
+        <!-- Left: Support button (Headphones) -->
+        <button type="button" aria-label="الدعم الفني"
+          class="text-gray-800 hover:text-[#ED1C24] hover:bg-gray-50 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-200 active:scale-95">
+          <img src="/imgs/ic-support.svg" alt="Contact US">
+        </button>
+      </header>
+
+      <!-- Workspace Content -->
+      <div class="grow flex flex-col items-center justify-start pt-4 pb-32 md:py-6 md:pb-10 md:justify-center px-4 sm:px-6 md:px-0">
+
+        <!-- Payment Card -->
+        <div
+          class="w-full max-w-lg bg-transparent border-0 shadow-none p-0 md:bg-white md:rounded-3xl md:border md:border-gray-100 md:shadow-xl md:shadow-gray-100/40 md:p-6 flex flex-col gap-6 transition-all duration-300">
+
+          <!-- Section Title -->
+          <h2 class="text-xl font-black text-gray-900 text-right">دفع سريع و آمن</h2>
+
+          <!-- Total Price Container -->
+          <div class="flex items-center justify-between bg-[#F5F6F8] px-5 py-4 rounded-[18px]">
+            <span class="text-[#1C1C1C] font-semibold text-sm">الإجمالي</span>
+            <span class="text-xl font-black text-gray-900">{{ totalAmount() }} د.ك</span>
+          </div>
+
+          <!-- Section Subtitle -->
+          <div class="text-right">
+            <h3 class="text-base font-black text-gray-900">طريقة الدفع</h3>
+            <p class="text-xs font-semibold text-gray-400 mt-1">يرجى اختيار طريقه الدفع</p>
+          </div>
+
+          <!-- Payment Options -->
+          <div class="flex flex-col gap-4">
+
+            <!-- KNet Option -->
+            <div (click)="selectMethod('knet')"
+              [ngClass]="selectedMethod() === 'knet' ? 'border-[#ED1C24] shadow-[0_4px_20px_rgba(237,28,36,0.06)]' : 'border-gray-100 shadow-sm shadow-gray-100/50 hover:border-gray-200'"
+              class="border-2 rounded-[20px] p-4 flex items-center justify-between cursor-pointer transition-all duration-200 bg-white">
+              <div class="flex items-center gap-4">
+                @if (selectedMethod() === 'knet') {
+                <div
+                  class="w-6 h-6 bg-[#ED1C24] rounded-full flex items-center justify-center text-white scale-100 transition-all duration-200">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                </div>
+                } @else {
+                <div
+                  class="w-6 h-6 rounded-full border-2 border-gray-200 bg-white scale-100 transition-all duration-200">
+                </div>
+                }
+                <span class="font-bold text-gray-900 text-sm">كي نت</span>
+              </div>
+              <div class="w-12 h-8 flex items-center justify-center">
+                <img src="/imgs/Icons_KNET.svg" alt="KNet" class="h-6 w-auto object-contain block" />
+              </div>
+            </div>
+
+            <!-- Credit Card Option -->
+            <div (click)="selectMethod('credit-card')"
+              [ngClass]="selectedMethod() === 'credit-card' ? 'border-[#ED1C24] shadow-[0_4px_20px_rgba(237,28,36,0.06)]' : 'border-gray-100 shadow-sm shadow-gray-100/50 hover:border-gray-200'"
+              class="border-2 rounded-[20px] p-4 flex items-center justify-between cursor-pointer transition-all duration-200 bg-white">
+              <div class="flex items-center gap-4">
+                @if (selectedMethod() === 'credit-card') {
+                <div
+                  class="w-6 h-6 bg-[#ED1C24] rounded-full flex items-center justify-center text-white scale-100 transition-all duration-200">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                  </svg>
+                </div>
+                } @else {
+                <div
+                  class="w-6 h-6 rounded-full border-2 border-gray-200 bg-white scale-100 transition-all duration-200">
+                </div>
+                }
+                <span class="font-bold text-gray-900 text-sm">بطاقة الائتمان</span>
+              </div>
+              <div class="w-12 h-8 flex items-center justify-center">
+                <img src="/imgs/Icons_Master Card.svg" alt="Credit Card" class="h-6 w-auto object-contain block" />
+              </div>
+            </div>
+          </div>
+          <!-- Bottom Button -->
+          <div class="fixed bottom-0 left-0 right-0 z-20 bg-white border-t border-gray-100 p-4 pb-safe shadow-[0_-8px_20px_rgba(0,0,0,0.03)] md:relative md:bg-transparent md:border-t-0 md:p-0 md:shadow-none mt-2">
+            <app-button (click)="onContinue()" [variant]="'primary'" [fullWidth]="true" [size]="'lg'"
+              [loading]="isLoading()" class="[&>button]:rounded-full [&>button]:py-4">
+              استمرار
+            </app-button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Sidebar Menu (Visible on desktop only) -->
+    <aside dir="rtl" class="hidden md:block w-75 bg-white border-l border-gray-100 h-screen sticky top-0 shrink-0">
+      <app-sidebar [activeItem]="activeTab" (navigate)="onNavigate($event)"></app-sidebar>
+    </aside>
+
+  </div>
+</div>

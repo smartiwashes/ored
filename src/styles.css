@@ -1,0 +1,39 @@
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Cairo', system-ui, -apple-system, sans-serif;
+}
+
+html, body {
+  font-family: 'Cairo', system-ui, -apple-system, sans-serif;
+  background-color: #F5F6F8;
+  margin: 0;
+  padding: 0;
+}
+
+/* Ooredoo 4-dot bouncing animation (one by one sequential, slower) */
+@keyframes ooredoo-dot-bounce {
+  0%, 25%, 100% {
+    transform: translateY(0);
+  }
+  12.5% {
+    transform: translateY(-7px);
+  }
+}
+
+.animate-dot-bounce {
+  animation: ooredoo-dot-bounce 1.6s infinite ease-in-out;
+}
+
+.delay-400 {
+  animation-delay: 0.4s;
+}
+
+.delay-800 {
+  animation-delay: 0.8s;
+}
+
+.delay-1200 {
+  animation-delay: 1.2s;
+}

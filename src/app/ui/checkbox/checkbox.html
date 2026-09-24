@@ -1,0 +1,39 @@
+<div
+  (click)="toggle($event)"
+  [class.opacity-50]="disabled"
+  [class.cursor-not-allowed]="disabled"
+  [class.cursor-pointer]="!disabled"
+  class="inline-flex items-center gap-2 select-none group text-right justify-end"
+  dir="rtl"
+>
+  <div
+    [class.border-red-600]="checked && !disabled"
+    [class.bg-red-600]="checked && !disabled"
+    [class.border-gray-300]="!checked"
+    [class.bg-gray-100]="disabled && checked"
+    class="w-5 h-5 flex items-center justify-center rounded border-2 transition-all duration-200"
+  >
+    @if (checked) {
+      <svg
+        class="w-3.5 h-3.5 text-white"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="3"
+          d="M5 13l4 4L19 7"
+        ></path>
+      </svg>
+    }
+  </div>
+
+  @if (label) {
+    <span class="text-sm font-medium text-gray-700 transition-colors group-hover:text-gray-900">
+      {{ label }}
+    </span>
+  }
+</div>

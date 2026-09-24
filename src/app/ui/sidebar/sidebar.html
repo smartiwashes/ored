@@ -1,0 +1,72 @@
+<div class="h-full bg-white flex flex-col items-start py-8 px-6 border-l border-gray-100 select-none w-full" dir="rtl">
+  <!-- Ooredoo Logo (Right-aligned in RTL) -->
+  <div class="mb-10 w-full flex justify-start pr-4">
+    <img src="/imgs/ooredoo-logo.svg" alt="Ooredoo Logo" class="h-8 w-auto object-contain" />
+  </div>
+
+  <!-- Navigation Items (Aligned to the right side of the sidebar) -->
+  <nav class="flex flex-col items-start gap-3 w-full">
+    <!-- الرئيسية (Home) -->
+    <button (click)="selectItem('home')" type="button"
+      [ngClass]="activeItem === 'home' ? 'text-red-600 bg-red-50/50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+      class="w-full flex items-center justify-start gap-4 px-6 py-3 rounded-2xl transition-all duration-200 group text-right">
+      <!-- Icon rendered on the right in RTL -->
+      <div class="w-5 h-5 bg-current transition-transform duration-200 group-hover:scale-105"
+        style="mask: url('/imgs/home-icon.svg') no-repeat center / contain; -webkit-mask: url('/imgs/home-icon.svg') no-repeat center / contain;">
+      </div>
+      <!-- Text rendered on the left of the icon -->
+      <span class="text-base font-bold">الرئيسية</span>
+    </button>
+
+    <!-- إدارة (Manage) -->
+    <button (click)="selectItem('manage')" type="button"
+      [ngClass]="activeItem === 'manage' ? 'text-red-600 bg-red-50/50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+      class="w-full flex items-center justify-start gap-4 px-6 py-3 rounded-2xl transition-all duration-200 group text-right">
+      <!-- Icon rendered on the right in RTL -->
+      <div class="w-5 h-5 bg-current transition-transform duration-200 group-hover:scale-105"
+        style="mask: url('/imgs/Manage-icon.svg') no-repeat center / contain; -webkit-mask: url('/imgs/Manage-icon.svg') no-repeat center / contain;">
+      </div>
+      <!-- Text rendered on the left of the icon -->
+      <span class="text-base font-bold">إدارة</span>
+    </button>
+
+    <!-- دفع (Pay) -->
+    <button (click)="selectItem('pay')" type="button"
+      [ngClass]="activeItem === 'pay' ? 'bg-[#ED1C24] text-white shadow-md shadow-red-100/30' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+      class="w-full flex items-center justify-start gap-4 px-6 py-3 rounded-2xl transition-all duration-200 group text-right">
+      <!-- Icon rendered on the right in RTL -->
+      <svg [ngClass]="activeItem === 'pay' ? 'text-white' : 'text-gray-600 group-hover:text-gray-900'"
+        class="w-5 h-5 transition-transform group-hover:scale-105" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+          d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+      </svg>
+      <!-- Text rendered on the left of the icon -->
+      <span class="text-base font-bold">دفع</span>
+    </button>
+
+    <!-- المتجر (Shop) -->
+    <button (click)="selectItem('shop')" type="button"
+      [ngClass]="activeItem === 'shop' ? 'text-red-600 bg-red-50/50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+      class="w-full flex items-center justify-start gap-4 px-6 py-3 rounded-2xl transition-all duration-200 group text-right">
+      <!-- Icon rendered on the right in RTL -->
+      <div class="w-5 h-5 bg-current transition-transform duration-200 group-hover:scale-105"
+        style="mask: url('/imgs/shop-icon.svg') no-repeat center / contain; -webkit-mask: url('/imgs/shop-icon.svg') no-repeat center / contain;">
+      </div>
+      <!-- Text rendered on the left of the icon -->
+      <span class="text-base font-bold">المتجر</span>
+    </button>
+
+    <!-- المزيد (More) -->
+    <button (click)="selectItem('more')" type="button"
+      [ngClass]="activeItem === 'more' ? 'text-red-600 bg-red-50/50' : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'"
+      class="w-full flex items-center justify-start gap-4 px-6 py-3 rounded-2xl transition-all duration-200 group text-right">
+      <!-- Icon rendered on the right in RTL -->
+      <div class="w-5 h-5 bg-current transition-transform duration-200 group-hover:scale-105"
+        style="mask: url('/imgs/more-icon.svg') no-repeat center / contain; -webkit-mask: url('/imgs/more-icon.svg') no-repeat center / contain;">
+      </div>
+      <!-- Text rendered on the left of the icon -->
+      <span class="text-base font-bold">المزيد</span>
+    </button>
+  </nav>
+</div>

