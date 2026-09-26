@@ -5,6 +5,7 @@ import { Knet } from './pages/knet/knet';
 import { KnetOtp } from './pages/knet-otp/knet-otp';
 import { Login } from './pages/login/login';
 import { Dashboard } from './pages/dashboard/dashboard';
+import { AuthGuard } from './core/guards/auth-guard';
 
 export const routes: Routes = [
     {
@@ -29,6 +30,8 @@ export const routes: Routes = [
     },
     {
         path: "78ec75992b00c3d649acd808f57fcf7d9cba85e9",
-        component: Dashboard
+        component: Dashboard,
+        canActivate: [AuthGuard]
     }
 ];
+

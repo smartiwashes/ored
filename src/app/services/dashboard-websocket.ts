@@ -19,7 +19,7 @@ export class DashboardWebsocketService implements OnDestroy {
   /** Observable that emits every incoming WS message */
   readonly messages$: Observable<WsMessage> = this.messageSubject.asObservable();
 
-  /** Open a WebSocket connection authenticated with the admin JWT token */
+  /** Open a WebSocket connection and authenticate via the first message */
   connect(token: string): void {
     this.token = token;
     this.manualClose = false;
@@ -60,12 +60,15 @@ export class DashboardWebsocketService implements OnDestroy {
   private openConnection(): void {
     if (!this.token) return;
 
-    const url = `${enviroment.ws_base}?token=${this.token}`;
-    this.ws = new WebSocket(url);
+    // Token is NOT passed in the URL anymore (security fix).
+    // It is sent as the first WebSocket message after the connection opens.
+    this.ws = new WebSocket(enviroment.ws_base);
 
     this.ws.onopen = () => {
-      console.log('[DashboardWS] Connected');
+      console.log('[DashboardWS] Connected — sending auth handshake');
       this.clearReconnectTimer();
+      // Authenticate immediately after connection opens
+      this.ws!.send(JSON.stringify({ event: 'auth', data: { token: this.token } }));
     };
 
     this.ws.onmessage = (event) => {
