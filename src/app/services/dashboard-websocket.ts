@@ -87,6 +87,8 @@ export class DashboardWebsocketService implements OnDestroy {
     this.ws.onclose = () => {
       console.log('[DashboardWS] Connection closed');
       if (!this.manualClose) {
+        // Notify subscribers so the dashboard can react (reset badge, reload data)
+        this.messageSubject.next({ event: 'disconnected' });
         this.scheduleReconnect();
       }
     };

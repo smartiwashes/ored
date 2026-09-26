@@ -121,7 +121,15 @@ export class Dashboard implements OnInit, OnDestroy {
     this.wsSub = this.wsService.messages$.subscribe((msg) => {
       switch (msg.event) {
         case 'connected':
+          // On reconnect, reload HTTP data to catch any events missed during disconnection
+          if (this.wsConnected()) {
+            this.loadData();
+          }
           this.wsConnected.set(true);
+          break;
+
+        case 'disconnected':
+          this.wsConnected.set(false);
           break;
 
         case 'client_created': {
