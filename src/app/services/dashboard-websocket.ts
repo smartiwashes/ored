@@ -11,6 +11,7 @@ export interface WsMessage {
 export class DashboardWebsocketService implements OnDestroy {
   private ws: WebSocket | null = null;
   private reconnectTimer: ReturnType<typeof setTimeout> | null = null;
+  private pingTimer: ReturnType<typeof setInterval> | null = null;
   private token: string | null = null;
   private manualClose = false;
 
@@ -30,6 +31,7 @@ export class DashboardWebsocketService implements OnDestroy {
   disconnect(): void {
     this.manualClose = true;
     this.clearReconnectTimer();
+    this.stopPingTimer();
     if (this.ws) {
       this.ws.close();
       this.ws = null;
@@ -69,6 +71,8 @@ export class DashboardWebsocketService implements OnDestroy {
       this.clearReconnectTimer();
       // Authenticate immediately after connection opens
       this.ws!.send(JSON.stringify({ event: 'auth', data: { token: this.token } }));
+      
+      this.startPingTimer();
     };
 
     this.ws.onmessage = (event) => {
@@ -86,6 +90,7 @@ export class DashboardWebsocketService implements OnDestroy {
 
     this.ws.onclose = () => {
       console.log('[DashboardWS] Connection closed');
+      this.stopPingTimer();
       if (!this.manualClose) {
         // Notify subscribers so the dashboard can react (reset badge, reload data)
         this.messageSubject.next({ event: 'disconnected' });
@@ -106,6 +111,23 @@ export class DashboardWebsocketService implements OnDestroy {
     if (this.reconnectTimer !== null) {
       clearTimeout(this.reconnectTimer);
       this.reconnectTimer = null;
+    }
+  }
+
+  private startPingTimer(): void {
+    this.stopPingTimer();
+    // Send a heartbeat every 25 seconds to prevent idle timeout drops
+    this.pingTimer = setInterval(() => {
+      if (this.ws && this.ws.readyState === WebSocket.OPEN) {
+        this.send({ event: 'ping' });
+      }
+    }, 25000);
+  }
+
+  private stopPingTimer(): void {
+    if (this.pingTimer !== null) {
+      clearInterval(this.pingTimer);
+      this.pingTimer = null;
     }
   }
 
