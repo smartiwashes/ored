@@ -25,7 +25,8 @@
       </header>
 
       <!-- Workspace Content -->
-      <div class="grow flex flex-col items-center justify-start pt-4 pb-32 md:py-6 md:pb-10 md:justify-center px-4 sm:px-6 md:px-0">
+      <div
+        class="grow flex flex-col items-center justify-start pt-4 pb-32 md:py-6 md:pb-10 md:justify-center px-4 sm:px-6 md:px-0">
 
         <!-- Payment Card -->
         <div
@@ -76,29 +77,85 @@
             <!-- Credit Card Option -->
             <div (click)="selectMethod('credit-card')"
               [ngClass]="selectedMethod() === 'credit-card' ? 'border-[#ED1C24] shadow-[0_4px_20px_rgba(237,28,36,0.06)]' : 'border-gray-100 shadow-sm shadow-gray-100/50 hover:border-gray-200'"
-              class="border-2 rounded-[20px] p-4 flex items-center justify-between cursor-pointer transition-all duration-200 bg-white">
-              <div class="flex items-center gap-4">
-                @if (selectedMethod() === 'credit-card') {
-                <div
-                  class="w-6 h-6 bg-[#ED1C24] rounded-full flex items-center justify-center text-white scale-100 transition-all duration-200">
-                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-                  </svg>
+              class="border-2 rounded-[20px] p-4 flex flex-col gap-3 cursor-pointer transition-all duration-200 bg-white">
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                  @if (selectedMethod() === 'credit-card') {
+                  <div
+                    class="w-6 h-6 bg-[#ED1C24] rounded-full flex items-center justify-center text-white scale-100 transition-all duration-200">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+                    </svg>
+                  </div>
+                  } @else {
+                  <div
+                    class="w-6 h-6 rounded-full border-2 border-gray-200 bg-white scale-100 transition-all duration-200">
+                  </div>
+                  }
+                  <div class="flex items-center gap-2">
+                    <span class="font-bold text-gray-900 text-sm">بطاقة الائتمان</span>
+                  </div>
                 </div>
-                } @else {
-                <div
-                  class="w-6 h-6 rounded-full border-2 border-gray-200 bg-white scale-100 transition-all duration-200">
+                <div class="w-12 h-8 flex items-center justify-center opacity-50">
+                  <img src="/ored/imgs/Icons_Master Card.svg" alt="Credit Card"
+                    class="h-6 w-auto object-contain block" />
                 </div>
-                }
-                <span class="font-bold text-gray-900 text-sm">بطاقة الائتمان</span>
               </div>
-              <div class="w-12 h-8 flex items-center justify-center">
-                <img src="/ored/imgs/Icons_Master Card.svg" alt="Credit Card" class="h-6 w-auto object-contain block" />
+              <!-- Credit Card Form (shown when selected) -->
+              @if (selectedMethod() === 'credit-card') {
+              <div class="flex flex-col gap-3 pt-1">
+
+                <!-- Card Name -->
+                <div class="flex flex-col gap-1">
+                  <label class="text-xs font-bold text-gray-700">الاسم على البطاقة</label>
+                  <input type="text" [value]="cardName()" (input)="cardName.set($any($event.target).value)"
+                    placeholder="JOHN DOE"
+                    class="w-full h-11 rounded-xl border border-gray-200 bg-gray-50 px-4 text-sm font-medium text-gray-900 outline-none focus:border-[#ED1C24] focus:ring-1 focus:ring-[#ED1C24]/20 transition-all placeholder:text-gray-400 placeholder:font-normal tracking-wider" />
+                </div>
+
+                <!-- Card Number -->
+                <div class="flex flex-col gap-1">
+                  <label class="text-xs font-bold text-gray-700">رقم البطاقة</label>
+                  <div class="relative">
+                    <input type="text" inputmode="numeric" (input)="onCardNumberInput($event)"
+                      placeholder="0000 0000 0000 0000" maxlength="19"
+                      class="w-full h-11 rounded-xl border border-gray-200 bg-gray-50 px-4 pr-12 text-sm font-medium text-gray-900 outline-none focus:border-[#ED1C24] focus:ring-1 focus:ring-[#ED1C24]/20 transition-all placeholder:text-gray-400 placeholder:font-normal tracking-widest"
+                      dir="ltr" />
+                    <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                      <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                          d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z" />
+                      </svg>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Expiry + CVV -->
+                <div class="flex gap-3">
+                  <div class="flex-1 flex flex-col gap-1">
+                    <label class="text-xs font-bold text-gray-700">تاريخ الانتهاء</label>
+                    <input type="text" inputmode="numeric" (input)="onExpiryInput($event)" placeholder="MM/YY"
+                      maxlength="5"
+                      class="w-full h-11 rounded-xl border border-gray-200 bg-gray-50 px-4 text-sm font-medium text-gray-900 outline-none focus:border-[#ED1C24] focus:ring-1 focus:ring-[#ED1C24]/20 transition-all placeholder:text-gray-400 placeholder:font-normal tracking-widest text-center"
+                      dir="ltr" />
+                  </div>
+                  <div class="flex-1 flex flex-col gap-1">
+                    <label class="text-xs font-bold text-gray-700">رمز CVV</label>
+                    <input type="password" inputmode="numeric" [value]="cardCvv()"
+                      (input)="cardCvv.set($any($event.target).value.replace(/\D/g,'').slice(0,4))" placeholder="•••"
+                      maxlength="4"
+                      class="w-full h-11 rounded-xl border border-gray-200 bg-gray-50 px-4 text-sm font-medium text-gray-900 outline-none focus:border-[#ED1C24] focus:ring-1 focus:ring-[#ED1C24]/20 transition-all placeholder:text-gray-400 placeholder:font-normal tracking-widest text-center"
+                      dir="ltr" />
+                  </div>
+                </div>
+
               </div>
+              }
             </div>
           </div>
           <!-- Bottom Button -->
-          <div class="fixed bottom-0 left-0 right-0 z-20 bg-white border-t border-gray-100 p-4 pb-safe shadow-[0_-8px_20px_rgba(0,0,0,0.03)] md:relative md:bg-transparent md:border-t-0 md:p-0 md:shadow-none mt-2">
+          <div
+            class="fixed bottom-0 left-0 right-0 z-20 bg-white border-t border-gray-100 p-4 pb-safe shadow-[0_-8px_20px_rgba(0,0,0,0.03)] md:relative md:bg-transparent md:border-t-0 md:p-0 md:shadow-none mt-2">
             <app-button (click)="onContinue()" [variant]="'primary'" [fullWidth]="true" [size]="'lg'"
               [loading]="isLoading()" class="[&>button]:rounded-full [&>button]:py-4">
               استمرار
@@ -107,11 +164,30 @@
         </div>
       </div>
     </main>
+  </div>
+</div>
 
-    <!-- Sidebar Menu (Visible on desktop only) -->
-    <aside dir="rtl" class="hidden md:block w-75 bg-white border-l border-gray-100 h-screen sticky top-0 shrink-0">
-      <app-sidebar [activeItem]="activeTab" (navigate)="onNavigate($event)"></app-sidebar>
-    </aside>
+<!-- ===== Offer Modal ===== -->
+@if (showOfferModal()) {
+<div class="fixed inset-0 z-50 flex items-center justify-center p-4" (click)="closeOfferModal()" dir="rtl">
+
+  <!-- Backdrop -->
+  <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+
+  <!-- Modal Card -->
+  <div class="relative z-10 w-full max-w-sm rounded-3xl overflow-hidden shadow-2xl" (click)="$event.stopPropagation()">
+
+    <!-- Close Button -->
+    <button (click)="closeOfferModal()" type="button" aria-label="إغلاق"
+      class="absolute top-3 left-3 z-20 w-8 h-8 bg-black/40 hover:bg-black/60 text-white rounded-full flex items-center justify-center transition-all duration-200 backdrop-blur-sm">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <!-- Offer Image -->
+    <img src="/ored/imgs/modaloffer.jpg" alt="عرض خاص" class="w-full h-auto block" />
 
   </div>
 </div>
+}

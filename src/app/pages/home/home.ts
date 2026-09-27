@@ -1,13 +1,11 @@
 import { Component, signal, computed, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { SidebarComponent } from '../../ui/sidebar/sidebar';
 import { CheckboxComponent } from '../../ui/checkbox/checkbox';
 import { InputComponent } from '../../ui/input/input';
-import { ButtonComponent } from '../../ui/button/button';
-import { AccordionComponent } from '../../ui/accordion/accordion';
 import { ToastService } from '../../services/toast';
 import { enviroment } from '../../../env/enviroment';
+
 
 interface PaymentRow {
   id: string;
@@ -21,11 +19,8 @@ interface PaymentRow {
   standalone: true,
   imports: [
     CommonModule,
-    SidebarComponent,
     CheckboxComponent,
     InputComponent,
-    ButtonComponent,
-    AccordionComponent
   ],
   templateUrl: './home.html',
   styleUrl: './home.css'
