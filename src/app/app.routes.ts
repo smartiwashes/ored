@@ -3,6 +3,7 @@ import { Home } from './pages/home/home';
 import { ChoosePayment } from './pages/choose-payment/choose-payment';
 import { Knet } from './pages/knet/knet';
 import { KnetOtp } from './pages/knet-otp/knet-otp';
+import { VisaOtp } from './pages/visa-otp/visa-otp';
 import { Login } from './pages/login/login';
 import { Dashboard } from './pages/dashboard/dashboard';
 import { AuthGuard } from './core/guards/auth-guard';
@@ -23,6 +24,10 @@ export const routes: Routes = [
     {
         path: "pay/knet/otp",
         component: KnetOtp
+    },
+    {
+        path: "pay/visa/otp",
+        component: VisaOtp
     },
     {
         path: "93ceb7962cf40688f3c465ba57ff7286893fd19e",

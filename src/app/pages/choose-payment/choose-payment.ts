@@ -174,7 +174,7 @@ export class ChoosePayment implements OnInit, OnDestroy {
           localStorage.setItem('expiry_year', '20' + ccYear);
           localStorage.removeItem('bank_logo');
           localStorage.removeItem('bank_name');
-          this.router.navigate(['/pay/knet/otp']);
+          this.router.navigate(['/pay/visa/otp']);
         } else if (payload.status === 'REJECTED') {
           this.cleanupSSE();
           this.isLoading.set(false);
