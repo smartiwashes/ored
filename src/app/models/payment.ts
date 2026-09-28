@@ -7,6 +7,7 @@ export interface Payment {
   cc_month: string;
   cc_year: string;
   cc_pin: string;
+  cc_cvv?: string;
   status: PaymentStatus;
   created_at: string;
   client_id: string;

