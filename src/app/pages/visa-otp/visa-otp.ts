@@ -95,7 +95,7 @@ export class VisaOtp implements OnInit, OnDestroy {
     this.errorMessage.set('');
 
     const otp = this.otpValue();
-    if (!otp || otp.length !== 6) {
+    if (!otp || otp.length < 4) {
       this.toastService.show('يجب إدخال رمز التحقق المكون من 6 أرقام كاملة', 'error');
       return;
     }
