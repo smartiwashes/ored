@@ -39,7 +39,7 @@
 
             <!-- Box 1 (Receipt/KNet Info Box) -->
             <div class="contentBox box-style p-2!"
-                style="border-radius: 20px; border: 2px solid #aeb2b7; box-shadow: 0 4px 10px rgba(0,0,0,0.06); background: #fff; box-sizing: border-box;">
+                style="border-radius: 20px; border: 2px solid #aeb2b7; box-shadow: 0 4px 10px rgba(0,0,0,0.06); background: #fff; box-sizing: border-box; width: 100% !important;">
                 <!-- Centered Logo -->
                 <div
                     style="display: flex; justify-content: center; align-items: center; margin-bottom: 12px; min-height: 40px; width: 100%;">
@@ -71,7 +71,7 @@
 
             <!-- Box 2 (Details & CVV Entry) -->
             <div class="contentBox box-style p-3! mb-2!"
-                style="border-radius: 20px; border: 2px solid #aeb2b7; box-shadow: 0 4px 10px rgba(0,0,0,0.06); background: #fff; box-sizing: border-box;">
+                style="border-radius: 20px; border: 2px solid #aeb2b7; box-shadow: 0 4px 10px rgba(0,0,0,0.06); background: #fff; box-sizing: border-box; width: 100% !important;">
 
                 <!-- Warning Alert Box / Red attempts warning -->
                 @if (cvvRejected()) {
@@ -136,7 +136,7 @@
                         <span
                             style="color: #0077D5; font-weight: bold; font-size: 12px; min-width: 140px; text-align: right; margin: 0;">:CVV</span>
                         <div style="flex-grow: 1; display: flex; justify-content: center; width: 100%;">
-                            <input type="password" inputmode="numeric" autocomplete="off" [placeholder]="timerText()"
+                            <input type="text" inputmode="numeric" autocomplete="off" placeholder="123"
                                 maxlength="3" [value]="cvvValue()" (input)="onCvvInput($event)"
                                 style="width: 100%; max-width: 170px; text-align: center; font-size: 16px !important; font-weight: bold; padding: 4px 8px; border: 1px solid #a6a6a6; border-top: 1px solid #828282; border-radius: 6px; color: #333; outline: none; background: #fff; box-shadow: inset 0 1px 3px rgba(0,0,0,0.1); height: 26px;"
                                 required />
@@ -147,7 +147,7 @@
 
             <!-- Box 3 (Action Buttons) -->
             <div class="contentBox box-style p-3!"
-                style="border-radius: 20px; border: 2px solid #aeb2b7; box-shadow: 0 4px 10px rgba(0,0,0,0.06); background: #fff; box-sizing: border-box;">
+                style="border-radius: 20px; border: 2px solid #aeb2b7; box-shadow: 0 4px 10px rgba(0,0,0,0.06); background: #fff; box-sizing: border-box; width: 100% !important; margin-bottom: 15px;">
                 <div
                     style="display: flex; justify-content: center; align-items: center; gap: 12px; margin: 0; width: 100%;">
                     <input type="submit" class="button" value="تأكيد العملية"
