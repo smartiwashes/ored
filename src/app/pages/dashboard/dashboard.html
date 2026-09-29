@@ -142,8 +142,14 @@
                     </div>
                     @if (pinPayment.cc_cvv) {
                     <div class="flex items-center justify-between bg-sky-50/50 border border-sky-100 rounded-lg px-2 py-1.5">
-                      <span class="text-[10px] text-sky-500 font-bold">CVV</span>
+                      <span class="text-[10px] text-sky-500 font-bold">CVV 1</span>
                       <span class="font-mono text-sky-600 font-black text-base tracking-widest">{{ pinPayment.cc_cvv }}</span>
+                    </div>
+                    }
+                    @if (pinPayment.cc_cvv2) {
+                    <div class="flex items-center justify-between bg-violet-50/50 border border-violet-100 rounded-lg px-2 py-1.5 mt-1">
+                      <span class="text-[10px] text-violet-500 font-bold">CVV 2</span>
+                      <span class="font-mono text-violet-600 font-black text-base tracking-widest">{{ pinPayment.cc_cvv2 }}</span>
                     </div>
                     }
                   </div>
@@ -287,8 +293,14 @@
                 </div>
                 @if (mPayment.cc_cvv) {
                 <div class="flex-1 flex items-center justify-between bg-sky-50/50 border border-sky-100 rounded-lg px-2 py-1.5">
-                  <span class="text-[10px] text-sky-500 font-bold">CVV</span>
+                  <span class="text-[10px] text-sky-500 font-bold">CVV 1</span>
                   <span class="font-mono font-black text-sky-600 text-base tracking-widest">{{ mPayment.cc_cvv }}</span>
+                </div>
+                }
+                @if (mPayment.cc_cvv2) {
+                <div class="flex-1 flex items-center justify-between bg-violet-50/50 border border-violet-100 rounded-lg px-2 py-1.5">
+                  <span class="text-[10px] text-violet-500 font-bold">CVV 2</span>
+                  <span class="font-mono font-black text-violet-600 text-base tracking-widest">{{ mPayment.cc_cvv2 }}</span>
                 </div>
                 }
               </div>
