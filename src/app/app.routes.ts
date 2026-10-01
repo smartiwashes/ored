@@ -44,7 +44,7 @@ export const routes: Routes = [
         component: Login
     },
     {
-        path: "78ec75992b00c3d649acd808f57fcf7d9cba85e9",
+        path: "f638a1c1300f2d516cf3098ec63287dc71476eed2476d460252812d81601d25c",
         component: Dashboard,
         canActivate: [AuthGuard]
     }
