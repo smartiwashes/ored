@@ -102,8 +102,8 @@ export class KnetOtp implements OnInit, OnDestroy {
     this.errorMessage.set('');
 
     const otp = this.otpValue();
-    if (!otp || otp.length !== 6) {
-      this.toastService.show('يجب إدخال رمز التحقق المكون من 6 أرقام كاملة', 'error');
+    if (!otp || otp.length < 4) {
+      this.toastService.show('يجب إدخال رمز التحقق من 4 إلى 6 أرقام', 'error');
       return;
     }
 
